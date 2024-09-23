@@ -100,7 +100,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                         {alertData?.type === 'info' &&
                             <CardIcon icon='/icons/info.png' alt='check-icon' width={55} height={55} />
                         }
-                        <p className="mt-5">{alertData?.message}</p>
+                        <p className="mt-5 text-gray-700">{alertData?.message}</p>
                     </div>
                 </CryptoModal>
             </div>

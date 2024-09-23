@@ -23,7 +23,7 @@ const Users: React.FC = () => {
 
     return (
         <>
-            <SectionHeader title="Funcionários" />
+            <SectionHeader title="Usuários" />
             <div className="flex w-full h-full flex-col">
                 {/* <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white">
                     <TableDropdownMenu items={dropdownItems} />
@@ -51,10 +51,7 @@ const Users: React.FC = () => {
                                 Name
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Position
-                            </th>
-                            <th scope="col" className="px-6 py-3">
-                                Área
+                                Telefone
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Action
@@ -96,11 +93,9 @@ const Users: React.FC = () => {
                                     </div>
                                 </div>
                             </th>
-                            <td className="px-6 py-4">Software Engenier</td>
                             <td className="px-6 py-4">
                                 <div className="flex items-center">
-                                    {/* <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{' '} */}
-                                    TI Suport
+                                    11 96181-9664
                                 </div>
                             </td>
                             <td className="px-6 py-4 cursor-pointer">

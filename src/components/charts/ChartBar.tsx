@@ -18,7 +18,7 @@ const ChartBar: React.FC = () => {
         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         datasets: [
             {
-                label: 'Obras em Andamento',
+                label: 'Análises em andamento',
                 data: [5, 10, 3, 8, 15, 7, 11],
                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
                 borderColor: 'rgb(75, 192, 192)',

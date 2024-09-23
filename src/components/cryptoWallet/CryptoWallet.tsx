@@ -39,7 +39,7 @@ export const CryptoModal: React.FC<CryptoModalProps> = ({ isOpen, closeModal, ch
                         </h3>
                         <button
                             type="button"
-                            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center"
                             onClick={closeModal}
                         >
                             <svg

@@ -5,28 +5,27 @@ import { randomUUID } from "crypto"
 import { useRouter } from "next/router"
 import React from "react"
 
-const Customer: React.FC = () => {
+const Budget: React.FC = () => {
     const router = useRouter()
 
     const dropdownItems = [
-        { label: 'Novo Cliente', href: '#' },
-        { label: 'Desativar Cliente', href: '#' },
-        { label: 'Deletar Cliente', href: '#' },
+        { label: 'Novo', href: '#' },
+        { label: 'Deletar Análise', href: '#' },
     ];
 
 
-    const Customer = [
+    const Budget = [
         { id: 1, name: 'Marcus Silva', email: 'marcus.silva@gmail.com', avatar: '', position: 'Software Engenier', area: 'TI Development' },
         { id: 2, name: 'Fulano Souza', email: 'fulano.silva@gmail.com', avatar: '', position: 'Software Engenier', area: 'RH' },
     ];
 
     return (
         <>
-            <SectionHeader title="Clientes" />
+            <SectionHeader title="Análises" />
             <div className="flex w-full h-full flex-col">
-                <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white py-2 px-2">
+                <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
                     <TableDropdownMenu items={dropdownItems} />
-                    <TableSearchInput placeholder="Pesquisar por Cliente" />
+                    <TableSearchInput placeholder="Buscar por Cliente" />
                 </div>
                 <Table>
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 border">
@@ -50,13 +49,13 @@ const Customer: React.FC = () => {
                                 Cliente
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Empresa
+                                Tipo de Análise
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Status
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Action
+                                Ação
                             </th>
                         </tr>
                     </thead>
@@ -85,23 +84,20 @@ const Customer: React.FC = () => {
                                     <div className="text-base font-semibold">
                                         Diebold Nixdorf
                                     </div>
-                                    <div className="font-normal text-gray-500">
-                                        contato@diebold.com.br
-                                    </div>
                                 </div>
                             </th>
-                            <td className="px-6 py-4">Youtuber</td>
+                            <td className="px-6 py-4">Vídeos do Youtube</td>
                             <td className="px-6 py-4">
                                 <div className="flex items-center">
-                                    <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Active
+                                    <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Finalizado
                                 </div>
                             </td>
                             <td className="px-6 py-4 cursor-pointer">
-                                <div onClick={() => router.push(`/customer/1`)}>
+                                <div onClick={() => router.push(`/analytcs/1`)}>
                                     <a
                                         className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                                     >
-                                        Editar Cliente
+                                        Editar análise
                                     </a>
                                 </div>
                             </td>
@@ -114,4 +110,4 @@ const Customer: React.FC = () => {
 
 }
 
-export default Customer
+export default Budget

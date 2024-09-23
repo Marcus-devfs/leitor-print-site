@@ -6,14 +6,13 @@ const UserEdit: React.FC = () => {
 
     const router = useRouter()
     const { id } = router.query
-    console.log(id)
 
     const user =
         { name: 'Marcus', email: 'marcus.silva@gmail.com', id: 1 }
 
     return (
         <>
-            <SectionHeader title={'Editar Funcionário'} />
+            <SectionHeader title={'Usuário'} />
             <div className="bg-white rounded py-5 px-6">
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Dados do Usuário</h1>
                 <form>
@@ -43,18 +42,6 @@ const UserEdit: React.FC = () => {
                             />
                         </div>
                         <div>
-                            <label htmlFor="area" className="block mb-2 text-sm font-medium text-gray-900">
-                                Área
-                            </label>
-                            <input
-                                type="text"
-                                id="area"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                placeholder="TI Suport"
-                                required
-                            />
-                        </div>
-                        <div>
                             <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900">
                                 Phone number
                             </label>
@@ -64,18 +51,6 @@ const UserEdit: React.FC = () => {
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                                 placeholder="123-45-678"
                                 pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="position" className="block mb-2 text-sm font-medium text-gray-900">
-                                Position
-                            </label>
-                            <input
-                                type="url"
-                                id="position"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                placeholder="Software Engenier"
                                 required
                             />
                         </div>

@@ -15,12 +15,12 @@ const CompanyEdit: React.FC = () => {
         <>
             <SectionHeader title='Editar Cliente' />
             <div className="bg-white rounded py-5 px-6">
-                <h1 className="text-gray-900 text-2xl font-bold pb-8">Dados da Empresa</h1>
+                <h1 className="text-gray-900 text-2xl font-bold pb-8">Dados do Cliente</h1>
                 <form>
                     <div className="grid gap-3 md:grid-cols-2">
                         <div>
                             <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900">
-                                Company name
+                                Nome
                             </label>
                             <input
                                 type="text"
@@ -32,7 +32,7 @@ const CompanyEdit: React.FC = () => {
                         </div>
                         <div>
                             <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900">
-                                Contact name
+                                Empresa
                             </label>
                             <input
                                 type="text"
@@ -44,7 +44,7 @@ const CompanyEdit: React.FC = () => {
                         </div>
                         <div>
                             <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900">
-                                Phone number
+                                Telefone
                             </label>
                             <input
                                 type="tel"
@@ -57,7 +57,7 @@ const CompanyEdit: React.FC = () => {
                         </div>
                         <div>
                             <label htmlFor="website" className="block mb-2 text-sm font-medium text-gray-900">
-                                Website URL
+                                Canal
                             </label>
                             <input
                                 type="url"
@@ -69,7 +69,7 @@ const CompanyEdit: React.FC = () => {
                         </div>
                         <div className="mb-6">
                             <label htmlFor="revenue" className="block mb-2 text-sm font-medium text-gray-900">
-                            Average Revenue
+                            Faturamento mensal
                             </label>
                             <input
                                 type="text"
@@ -82,7 +82,7 @@ const CompanyEdit: React.FC = () => {
                     </div>
                     <div className="mb-6">
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
-                            Email contact
+                            Email de contato
                         </label>
                         <input
                             type="email"
@@ -103,7 +103,7 @@ const CompanyEdit: React.FC = () => {
                         </div>
                         <label htmlFor="remember" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             <p className="text-gray-900">
-                                Active
+                                Ativo
                             </p>
                             .
                         </label>
