@@ -1,6 +1,7 @@
 import { SectionHeader } from "@/components"
 import Dropzone from "@/components/dropzone/Dropzone"
 import { Table } from "@/components/table"
+import { api } from "@/helpers/api"
 import { useRouter } from "next/router"
 import React from "react"
 
@@ -9,8 +10,18 @@ const BudgetEdit: React.FC = () => {
     const router = useRouter()
     const { id } = router.query
 
-    const company =
-        { name: 'Diebold Nixdorf', email: 'contato@diebold.com.br', id: 1 }
+    const handleFileUpload = async (file: File) => {
+        const formData = new FormData()
+
+        formData?.append('file', file, encodeURIComponent(file?.name))
+
+        try {
+            const response = await api.post('/file/upload', formData);
+            console.log('Dados extraídos:', response.data);
+        } catch (error) {
+            console.error('Erro no upload:', error);
+        }
+    };
 
     return (
         <>
@@ -167,7 +178,7 @@ const BudgetEdit: React.FC = () => {
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Prints</h1>
 
                 <div className="d-flex px-2 py-2">
-                    <Dropzone onFileUpload={(file) => console.log('arquivo lancado', file)} />
+                    <Dropzone onFileUpload={(file) => handleFileUpload(file)} />
                 </div>
 
                 <div className="d-flex flex-column gap-2">
