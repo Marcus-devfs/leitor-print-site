@@ -16,8 +16,8 @@ export const Button: React.FC<PropsButton> = ({ text = "read more", onClick, dis
                 className={isLoading ? "py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 inline-flex items-center"
                     :
                     `inline-flex items-center px-3 py-2 text-sm font-medium 
-                text-center text-white bg-blue-700
-                rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300`}
+                text-center text-white bg-[#FF6700]
+                rounded-lg hover:bg-[#FFA10B] focus:ring-4 focus:outline-none focus:bg-[#FF6700]-300`}
                 disabled={disabled}
                 onClick={onClick}
             >

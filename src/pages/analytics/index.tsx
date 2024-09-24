@@ -54,7 +54,7 @@ const Budget: React.FC = () => {
 
     return (
         <>
-            <SectionHeader title="Análises" />
+            <SectionHeader title="Arquivos e Campanhas" />
             <div className="flex w-full h-full flex-col">
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
                     <TableDropdownMenu items={dropdownItems} />

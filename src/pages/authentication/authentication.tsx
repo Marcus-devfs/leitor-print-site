@@ -2,6 +2,7 @@ import { Button } from "@/components/button/Button"
 import { Card, CardTitle, CardText, CardButton } from "@/components/card"
 import { Divider } from "@/components/divider/Divider"
 import { useAppContext } from "@/context/AppContext"
+import { useRouter } from "next/router"
 import React, { useState } from "react"
 
 interface UserAuthenticationObject {
@@ -16,6 +17,7 @@ const Authentication: React.FC = () => {
         email: '',
         password: ''
     })
+    const router = useRouter()
 
     const verifyInputs = () => {
 
@@ -82,11 +84,16 @@ const Authentication: React.FC = () => {
                             message: result?.message,
                             type: 'success'
                         })
-                        await handleLogin(userAuthentication)
+                        router.push('/dashboard')
                         return
                     }
                 } else {
-                    alert('Ocorreu um erro ao verificar seu dados. Contate o Suporte, ou tente novamente mais tarde.')
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro.',
+                        message: result?.message,
+                        type: 'error'
+                    })
                     return
                 }
 

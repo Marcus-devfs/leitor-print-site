@@ -1,4 +1,5 @@
 import { SectionHeader } from "@/components"
+import { Button } from "@/components/button/Button"
 import { useAppContext } from "@/context/AppContext"
 import { CustomerDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
@@ -13,7 +14,7 @@ const CompanyEdit: React.FC = () => {
         canal: '',
         revenue: '',
     })
-    const { setAlertData } = useAppContext()
+    const { setAlertData, loading, setLoading } = useAppContext()
     const router = useRouter()
     const { id } = router.query
     const newCustomer = id === 'new'
@@ -27,6 +28,7 @@ const CompanyEdit: React.FC = () => {
     }
 
     const getCustomer = async () => {
+        setLoading(true)
         try {
             const response = await fetch(`/api/customer/get?customerId=${id}`, {
                 method: 'GET',
@@ -53,6 +55,8 @@ const CompanyEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
+        } finally{
+            setLoading(false)
         }
     }
 
@@ -63,6 +67,7 @@ const CompanyEdit: React.FC = () => {
     }, [id])
 
     const handleCreate = async () => {
+        setLoading(true)
         try {
             const response = await fetch('/api/customer/create/', {
                 method: 'POST',
@@ -96,10 +101,13 @@ const CompanyEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar o cliente:', error);
             return error
+        } finally{
+            setLoading(false)
         }
     }
 
     const handleUpdate = async () => {
+        setLoading(true)
         try {
             const response = await fetch('/api/customer/update', {
                 method: 'PATCH',
@@ -135,10 +143,13 @@ const CompanyEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar o cliente:', error);
             return error
+        } finally{
+            setLoading(false)
         }
     }
 
     const handleDelete = async () => {
+        setLoading(false)
         try {
             const response = await fetch(`/api/customer/delete?customerId=${id}`, {
                 method: 'DELETE',
@@ -173,6 +184,8 @@ const CompanyEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
+        } finally{
+            setLoading(false)
         }
     }
 
@@ -281,14 +294,10 @@ const CompanyEdit: React.FC = () => {
                     </label>
                 </div>
                 <div className="flex gap-2">
-                    <button
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        onClick={() => newCustomer ? handleCreate() : handleUpdate()}
-                    >
-                        Salvar
-                    </button>
+                    <Button arrowIcon={!loading} isLoading={loading} text="Salvar" onClick={() => newCustomer ? handleCreate() : handleUpdate()} />
+
                     {!newCustomer && <button
-                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-4 py-2 text-center"
                         onClick={() => handleDelete()}
                     >
                         Excluir

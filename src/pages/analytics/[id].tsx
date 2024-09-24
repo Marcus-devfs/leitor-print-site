@@ -1,4 +1,5 @@
 import { SectionHeader } from "@/components"
+import { Button } from "@/components/button/Button"
 import Dropzone from "@/components/dropzone/Dropzone"
 import { Table } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
@@ -38,7 +39,7 @@ const AnalyticsEdit: React.FC = () => {
     const router = useRouter()
     const { id } = router.query
     const newAnalytics = id === 'new'
-    const { setAlertData, userData } = useAppContext()
+    const { setAlertData, userData, loading, setLoading } = useAppContext()
 
     const handleFileUpload = async (file: FileWithPreview, analyticsId: string) => {
 
@@ -62,6 +63,7 @@ const AnalyticsEdit: React.FC = () => {
     };
 
     const handleCustomers = async () => {
+        setLoading(true)
         try {
             const response = await api.get(`customer/list/filter?name=${customerName}`)
             const { success } = response.data
@@ -71,6 +73,8 @@ const AnalyticsEdit: React.FC = () => {
         } catch (error) {
             console.log(error)
             return error
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -120,6 +124,7 @@ const AnalyticsEdit: React.FC = () => {
     }
 
     const getAnalytics = async () => {
+        setLoading(true)
         try {
             const response = await fetch(`/api/analytics/get?analyticsId=${id}`, {
                 method: 'GET',
@@ -146,6 +151,8 @@ const AnalyticsEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -156,6 +163,7 @@ const AnalyticsEdit: React.FC = () => {
     }, [id])
 
     const handleCreate = async () => {
+        setLoading(true)
         try {
             const response = await fetch('/api/analytics/create', {
                 method: 'POST',
@@ -207,10 +215,13 @@ const AnalyticsEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar a Análise:', error);
             return error
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleUpdate = async () => {
+        setLoading(true)
         try {
             const response = await fetch('/api/analytics/update', {
                 method: 'PATCH',
@@ -246,10 +257,13 @@ const AnalyticsEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar a Análise:', error);
             return error
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleDelete = async () => {
+        setLoading(true)
         try {
             const response = await fetch(`/api/analytics/delete?analyticsId=${id}`, {
                 method: 'DELETE',
@@ -284,6 +298,8 @@ const AnalyticsEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
+        } finally{
+            setLoading(false)
         }
     }
 
@@ -340,14 +356,10 @@ const AnalyticsEdit: React.FC = () => {
                         Enviar por email
                     </button>}
 
-                    <button
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        onClick={() => newAnalytics ? handleCreate() : handleUpdate()}
-                    >
-                        Salvar
-                    </button>
+                    <Button arrowIcon={!loading} isLoading={loading} text="Salvar" onClick={() => newAnalytics ? handleCreate() : handleUpdate()} />
+
                     {!newAnalytics && <button
-                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-4 py-2 text-center"
                         onClick={() => handleDelete()}
                     >
                         Excluir

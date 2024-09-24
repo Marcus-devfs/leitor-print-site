@@ -21,7 +21,7 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
         setIsClient(true); // Atualiza o estado para verdadeiro após a primeira renderização
     }, []);
 
-    if (loading) return <Loading />;
+    // if (loading) return <Loading />;
     if (!isClient) return null; // Retorna null até que o cliente seja verificado
 
     const isAuthenticationPage = router.asPath === '/authentication';
@@ -32,7 +32,7 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
             <div className="flex overflow-auto w-full flex-col gap-8 py-24 px-8">
                 {isAuthenticated ? (
                     children // Renderiza os filhos se autenticado
-                ) : isAuthenticationPage ? (
+                ) : loading ? <Loading /> : isAuthenticationPage ? (
                     // Renderiza a página de autenticação se estiver na página de autenticação
                     <Authentication />
                 ) : (

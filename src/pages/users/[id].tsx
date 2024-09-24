@@ -1,4 +1,5 @@
 import { SectionHeader } from "@/components"
+import { Button } from "@/components/button/Button"
 import { useAppContext } from "@/context/AppContext"
 import { UserDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
@@ -12,7 +13,7 @@ const UserEdit: React.FC = () => {
         password: null,
         confirmPassword: null
     })
-    const { setAlertData } = useAppContext()
+    const { setAlertData, setLoading, loading } = useAppContext()
     const router = useRouter()
     const { id } = router.query
     const newUser = id === 'new'
@@ -26,6 +27,7 @@ const UserEdit: React.FC = () => {
     }
 
     const getUser = async () => {
+        setLoading(true)
         try {
             const response = await fetch(`/api/user/get?userId=${id}`, {
                 method: 'GET',
@@ -59,6 +61,8 @@ const UserEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -69,6 +73,7 @@ const UserEdit: React.FC = () => {
     }, [id])
 
     const handleCreate = async () => {
+        setLoading(true)
         try {
             const response = await fetch('/api/user/create/', {
                 method: 'POST',
@@ -102,10 +107,13 @@ const UserEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar o usuário:', error);
             return error
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleUpdate = async () => {
+        setLoading(true)
         try {
             const response = await fetch('/api/user/update', {
                 method: 'PATCH',
@@ -148,10 +156,13 @@ const UserEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar o usuário:', error);
             return error
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleDelete = async () => {
+        setLoading(true)
         try {
             const response = await fetch(`/api/user/delete?userId=${id}`, {
                 method: 'DELETE',
@@ -186,6 +197,8 @@ const UserEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -283,15 +296,11 @@ const UserEdit: React.FC = () => {
                     </label>
                 </div>
                 <div className="flex gap-2">
-                    <button
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        onClick={() => newUser ? handleCreate() : handleUpdate()}
-                    >
-                        {newUser ? 'Criar' : 'Salvar'}
-                    </button>
+                    <Button arrowIcon={!loading} isLoading={loading} text="Salvar" onClick={() => newUser ? handleCreate() : handleUpdate()} />
+
                     {!newUser && <button
+                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-4 py-2 text-center"
                         onClick={() => handleDelete()}
-                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                     >
                         Excluir
                     </button>}
