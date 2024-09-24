@@ -19,8 +19,6 @@ const Sidebar: React.FC<SidebarProps> = ({ menu }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState({ active: false, id: '' });
   const { userData } = useAppContext()
 
-  console.log(userData)
-
   const toggleDropdown = (menuId?: string) => {
     if (isDropdownOpen.active && isDropdownOpen.id === menuId) {
       setIsDropdownOpen({ active: false, id: '' });

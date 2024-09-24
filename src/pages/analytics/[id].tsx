@@ -1,14 +1,22 @@
 import { SectionHeader } from "@/components"
 import Dropzone from "@/components/dropzone/Dropzone"
 import { Table } from "@/components/table"
+import { useAppContext } from "@/context/AppContext"
 import { api } from "@/helpers/api"
 import { AnalyticsObjectData, CustomerDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
-const BudgetEdit: React.FC = () => {
+
+interface FileWithPreview {
+    file: File;
+    preview: string;
+}
+
+const AnalyticsEdit: React.FC = () => {
     const [customerName, setCustomerName] = useState<string>('')
     const [customers, setCustomers] = useState<CustomerDataObject[]>([])
+    const [newFiles, setNewFiles] = useState<FileWithPreview[]>([])
     const [analyticsData, setAnalyticsData] = useState<AnalyticsObjectData>({
         _id: '',
         name: '',
@@ -29,18 +37,28 @@ const BudgetEdit: React.FC = () => {
     })
     const router = useRouter()
     const { id } = router.query
+    const newAnalytics = id === 'new'
+    const { setAlertData, userData } = useAppContext()
 
-    const handleFileUpload = async (file: File) => {
+    const handleFileUpload = async (file: FileWithPreview, analyticsId: string) => {
+
+        const fileData = file.file
         const formData = new FormData()
-
-        formData?.append('file', file, encodeURIComponent(file?.name))
+        formData?.append('file', fileData, encodeURIComponent(fileData?.name))
 
         try {
-            const response = await api.post('/file/upload', formData);
-
+            const response = await api.post(`/file/upload?analyticsId=${analyticsId}`, formData);
+            console.log(response)
+            return true
         } catch (error) {
             console.error('Erro no upload:', error);
+            return false
         }
+    };
+
+    const handleAddFile = (file: File) => {
+        const filePreview = URL.createObjectURL(file);
+        setNewFiles((prevFiles) => [...prevFiles, { file, preview: filePreview }]);
     };
 
     const handleCustomers = async () => {
@@ -62,6 +80,174 @@ const BudgetEdit: React.FC = () => {
             ...prevValues,
             [e.target.name]: e.target.value,
         }))
+    }
+
+    const getAnalytics = async () => {
+        try {
+            const response = await fetch(`/api/analytics/get?analyticsId=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                setAlertData({
+                    active: true,
+                    title: 'Ocorreu um erro ao buscar Análise.',
+                    message: 'Erro ao buscar pelo Análise',
+                    type: 'error'
+                })
+                return
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                setAnalyticsData(data.analytics);
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        if (!newAnalytics && id) {
+            getAnalytics()
+        }
+    }, [id])
+
+    const handleCreate = async () => {
+        try {
+            const response = await fetch('/api/analytics/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ analyticsData, userId: userData._id } as Record<string, unknown>)
+            });
+
+            if (!response.ok) {
+                setAlertData({
+                    active: true,
+                    title: 'Ocorreu um erro.',
+                    message: 'Erro ao criar a Análise',
+                    type: 'error'
+                })
+                return
+            }
+
+            const data = await response.json();
+
+            if (data.analyticsId && newFiles.length > 0) {
+                let success = true
+                for (let file of newFiles) {
+                    const uploadFiles = await handleFileUpload(file, data.analyticsId)
+                    if (!uploadFiles) success = false
+                }
+
+                if (success) {
+
+                    setAlertData({
+                        active: true,
+                        title: 'Tudo Certo!',
+                        message: 'Análise cadastrada com sucesso!',
+                        type: 'success'
+                    })
+                } else {
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro ao subir arquivos.',
+                        message: 'Erro ao fazer upload dos arquivos na Análise',
+                        type: 'error'
+                    })
+                }
+            }
+
+            // router.push(`/analytics/${data.analyticsId}`);
+            return
+        } catch (error) {
+            console.error('Erro ao verificar a Análise:', error);
+            return error
+        }
+    }
+
+    const handleUpdate = async () => {
+        try {
+            const response = await fetch('/api/analytics/update', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ analyticsData, customerId: id } as Record<string, unknown>)
+            });
+
+            if (!response.ok) {
+                setAlertData({
+                    active: true,
+                    title: 'Erro na atualização.',
+                    message: 'Erro ao atualizar a Análise',
+                    type: 'error'
+                })
+                return
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                setAnalyticsData(data.analytics)
+
+                setAlertData({
+                    active: true,
+                    title: 'Atualizado!',
+                    message: 'Informações da Análise atualizadas.',
+                    type: 'success'
+                })
+            }
+            return
+        } catch (error) {
+            console.error('Erro ao verificar a Análise:', error);
+            return error
+        }
+    }
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`/api/analytics/delete?analyticsId=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                setAlertData({
+                    active: true,
+                    title: 'Ocorreu um erro ao excluir Análise.',
+                    message: 'Erro ao excluir Análise',
+                    type: 'error'
+                })
+                return
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                setAlertData({
+                    active: true,
+                    title: 'Tudo Certo!',
+                    message: 'Análise excluída com sucesso!',
+                    type: 'success'
+                })
+
+                router.push('/analytics')
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -103,7 +289,7 @@ const BudgetEdit: React.FC = () => {
 
                 <div className="flex gap-2 pt-5 w-full justify-end">
 
-                    <button
+                    {!newAnalytics && <button
                         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
                     >
                         <svg
@@ -115,19 +301,20 @@ const BudgetEdit: React.FC = () => {
                             <path d="M2.94 6.34a1 1 0 011.3.33L10 11.58l5.76-4.9a1 1 0 011.62.78v6.76a2 2 0 01-2 2H4a2 2 0 01-2-2V7.45a1 1 0 01.94-1.11z" />
                         </svg>
                         Enviar por email
-                    </button>
+                    </button>}
 
                     <button
-                        type="submit"
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        onClick={() => newAnalytics ? handleCreate() : handleUpdate()}
                     >
                         Salvar
                     </button>
-                    <button
+                    {!newAnalytics && <button
                         className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                        onClick={() => handleDelete()}
                     >
                         Excluir
-                    </button>
+                    </button>}
                 </div>
             </div>
 
@@ -222,7 +409,7 @@ const BudgetEdit: React.FC = () => {
                                 <input
                                     type="date"
                                     name="endDate"
-                                    value={analyticsData.startDate || ''}
+                                    value={analyticsData.endDate || ''}
                                     className="px-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5"
                                     placeholder="Select date start"
                                     onChange={handleChange}
@@ -251,7 +438,7 @@ const BudgetEdit: React.FC = () => {
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Prints</h1>
 
                 <div className="d-flex px-2 py-2">
-                    <Dropzone onFileUpload={(file) => handleFileUpload(file)} />
+                    <Dropzone onFileUpload={(file) => handleAddFile(file)} />
                 </div>
 
                 <div className="d-flex flex-column gap-2">
@@ -265,38 +452,13 @@ const BudgetEdit: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {[
-                                {
-                                    imgSrc: "/products/cadeiras_corporativas_nox.jpg",
-                                    alt: "Apple Watch",
-                                    name: "Cadeira NOX",
-                                    price: "R$599",
-                                    quantity: 400
-                                },
-                                {
-                                    imgSrc: "/products/cadeiras_corporativas_grid.jpg",
-                                    alt: "Cadeira GRID",
-                                    name: 'Cadeira GRID"',
-                                    price: "R$2499",
-                                    quantity: 250
-                                },
-                                {
-                                    imgSrc: "/products/cadeiras_corporativas_acto.jpg",
-                                    alt: "Cadeira ACTO",
-                                    name: "Cadeira ACTO",
-                                    price: "R$999",
-                                    quantity: 125
-                                }
-                            ].map((product, index) => (
-                                <tr
-                                    key={index}
-                                    className="bg-white border-b"
-                                >
+                            {newFiles.map((fileData, index) => (
+                                <tr key={index} className="bg-white border-b">
                                     <td className="p-4">
                                         <img
-                                            src={product.imgSrc}
-                                            className="w-16 md:w-32 max-w-full max-h-full"
-                                            alt={product.alt}
+                                            src={fileData.preview}
+                                            className="w-16 md:w-32 max-w-full max-h-36 object-cover"
+                                            alt={`Preview ${index}`}
                                         />
                                     </td>
                                     <td className="px-6 py-4 cursor-pointer">
@@ -307,6 +469,10 @@ const BudgetEdit: React.FC = () => {
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
                                             strokeWidth={2}
+                                            onClick={() => {
+                                                setNewFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+                                                URL.revokeObjectURL(fileData.preview);
+                                            }}
                                         >
                                             <path
                                                 strokeLinecap="round"
@@ -326,4 +492,4 @@ const BudgetEdit: React.FC = () => {
 
 }
 
-export default BudgetEdit
+export default AnalyticsEdit

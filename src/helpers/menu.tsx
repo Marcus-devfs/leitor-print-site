@@ -21,6 +21,6 @@ export const MenuList: MenuItem[] = [
         id: '04', title: 'Clientes', icon: '', path: '/customer', submenu: []
     },
     {
-        id: '05', title: 'Análises', icon: '', path: '/analytcs', submenu: []
+        id: '05', title: 'Análises', icon: '', path: '/analytics', submenu: []
     },
 ]
