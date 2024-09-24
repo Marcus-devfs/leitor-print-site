@@ -1,14 +1,16 @@
 import { CryptoModal } from "@/components";
 import { CardIcon } from "@/components/card";
 import { ReactNode, createContext, useContext, useEffect, useReducer, useState } from "react";
+import Cookies from "js-cookie";
+import { api } from "@/helpers/api";
 
-interface UserAuthentication {
+export interface UserAuthentication {
     email?: string,
     password?: string
 }
 
 interface AppContextType {
-    handleVerifyUser: (userData: UserAuthentication) => Promise<void | object | any>;
+    handleLogin: (userData: UserAuthentication) => Promise<void | object | any>;
     loading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     userData: object | any;
@@ -16,6 +18,7 @@ interface AppContextType {
     alertData: AlertData,
     setAlertData: React.Dispatch<React.SetStateAction<AlertData>>;
     isAuthenticated: boolean
+    logout: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -41,31 +44,70 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         message: '',
         type: ''
     })
-    const handleVerifyUser = async (userAuthentication: UserAuthentication) => {
+
+
+    useEffect(() => {
+        async function loadUserFromCookies() {
+            setLoading(true)
+
+            const token = Cookies.get('token')
+
+            try {
+                if (token != 'null') {
+                    api.defaults.headers.authorization = `Bearer ${token}`
+
+                    const response = await api.post('/user/loginbytoken')
+                    const { success } = response.data
+
+                    if (success) setUserData(response.data.user);
+                    else setUserData(null);
+                }
+            } catch (error) {
+                Cookies.set('token', '', { expires: 60 })
+                console.log(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        loadUserFromCookies()
+    }, [])
+
+
+
+    const handleLogin = async (userAuthentication: UserAuthentication) => {
         try {
-            // const response = await fetch('/api/verifyUser', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ userAuthentication } as Record<string, unknown>)
-            // });
+            const response = await fetch('/api/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userAuthentication } as Record<string, unknown>)
+            });
 
-            // if (!response.ok) {
-            //     throw new Error('Erro ao verificar o usuário');
-            // }
+            if (!response.ok) {
+                throw new Error('Erro ao verificar o usuário');
+            }
 
-            // const data = await response.json();
+            const data = await response.json();
 
-            // if (data?.user) {
-            //     setUserData(data?.user)
-            // }
-            // return data;
-            setUserData(userAuthentication)
+            if (data.success) {
+                const { token } = data.user
+                setUserData(data.user)
+
+                Cookies.set('token', token, { expires: 60 })
+                api.defaults.headers.Authorization = `Bearer ${token}`
+            }
+            return data;
         } catch (error) {
             console.error('Erro ao verificar o usuário:', error);
             return error
         }
+    }
+
+    const logout = () => {
+        Cookies.remove('token')
+        setUserData(null)
+        delete api.defaults.headers.Authorization
     }
 
     useEffect(() => {
@@ -78,12 +120,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return (
         <AppContext.Provider
             value={{
-                handleVerifyUser,
+                handleLogin,
                 loading, setLoading,
                 userData, setUserData,
                 alertData,
                 setAlertData,
                 isAuthenticated: !!userData,
+                logout
             }}
         >
             {children}

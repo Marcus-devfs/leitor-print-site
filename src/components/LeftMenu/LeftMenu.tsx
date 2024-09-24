@@ -1,3 +1,4 @@
+import { useAppContext } from '@/context/AppContext';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -6,6 +7,7 @@ interface MenuItem {
   title: string;
   icon: string;
   path: string;
+  userId?: boolean
   submenu?: MenuItem[];
 }
 
@@ -15,6 +17,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ menu }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState({ active: false, id: '' });
+  const { userData } = useAppContext()
+
+  console.log(userData)
 
   const toggleDropdown = (menuId?: string) => {
     if (isDropdownOpen.active && isDropdownOpen.id === menuId) {
@@ -79,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menu }) => {
                 </button>
               ) : (
                 <Link
-                  href={menuItem.path}
+                  href={menuItem.userId ? `${menuItem.path}/${userData._id}` : menuItem.path}
                   className="flex items-center p-2 text-gray-900 rounded-lg text-white hover:bg-gray-100 hover:bg-gray-700 group"
                 >
                   {/* <svg

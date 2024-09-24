@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState } from 'react';
 
 interface DropdownMenuProps {
@@ -40,14 +41,9 @@ export const TableDropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => {
                 <div className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 absolute mt-2">
                     <ul className="py-1 text-sm text-gray-700">
                         {items.map((item, index) => (
-                            <li key={index}>
-                                <a
-                                    href={item.href}
-                                    className="block px-4 py-2 hover:bg-gray-100"
-                                >
-                                    {item.label}
-                                </a>
-                            </li>
+                            <Link className="block px-4 py-2 hover:bg-gray-100" key={index} href={item?.href || ''}>
+                                {item.label}
+                            </Link>
                         ))}
                     </ul>
                 </div>

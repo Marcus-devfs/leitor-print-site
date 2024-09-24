@@ -1,34 +1,66 @@
 import { SectionHeader } from "@/components"
 import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
+import { UserDataObject } from "@/helpers/types"
 import { randomUUID } from "crypto"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 const Users: React.FC = () => {
+    const [users, setUsers] = useState<UserDataObject[]>([])
+    const { setAlertData } = useAppContext()
     const router = useRouter()
 
+
+    const getUsers = async () => {
+        try {
+            const response = await fetch(`/api/user/list`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                setAlertData({
+                    active: true,
+                    title: 'Ocorreu um erro ao buscar os usuários.',
+                    message: 'Erro ao buscar pelos usuários',
+                    type: 'error'
+                })
+                return
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                setUsers(data.users);
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        getUsers()
+    }, [])
+
     const dropdownItems = [
-        { label: 'Reward', href: '#' },
-        { label: 'Promote', href: '#' },
-        { label: 'Activate account', href: '#' },
-        { label: 'Delete User', href: '#' },
+        { label: 'Novo', href: '/users/new' },
+        { label: 'Desativar', href: '#' },
+        { label: 'Excluir Usuario', href: '#' },
     ];
 
-
-    const users = [
-        { id: 1, name: 'Marcus Silva', email: 'marcus.silva@gmail.com', avatar: '', position: 'Software Engenier', area: 'TI Development' },
-        { id: 2, name: 'Fulano Souza', email: 'fulano.silva@gmail.com', avatar: '', position: 'Software Engenier', area: 'RH' },
-    ];
 
     return (
         <>
             <SectionHeader title="Usuários" />
             <div className="flex w-full h-full flex-col">
-                {/* <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white">
+                <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white py-2 px-2">
                     <TableDropdownMenu items={dropdownItems} />
-                    <TableSearchInput placeholder="Search for users" />
-                </div> */}
+                    <TableSearchInput placeholder="Pesquisar por Usuario" />
+                </div>
                 <Table>
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 border">
                         <tr>
@@ -48,66 +80,72 @@ const Users: React.FC = () => {
                                 </div>
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Name
+                                Nome
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Telefone
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Action
+                                Ação
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="bg-white border-b  hover:bg-gray-50 dark:hover:bg-gray-200">
-                            <td className="w-4 p-4">
-                                <div className="flex items-center">
-                                    <input
-                                        id="checkbox-table-search-2"
-                                        type="checkbox"
-                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2  dark:border-gray-600"
-                                    />
-                                    <label
-                                        htmlFor="checkbox-table-search-2"
-                                        className="sr-only"
+                        {users.length > 0 ? users.map((item, index) => {
+                            return (
+                                <tr key={index} className="bg-white border-b  hover:bg-gray-50 dark:hover:bg-gray-200">
+                                    <td className="w-4 p-4">
+                                        <div className="flex items-center">
+                                            <input
+                                                id="checkbox-table-search-2"
+                                                type="checkbox"
+                                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2  dark:border-gray-600"
+                                            />
+                                            <label
+                                                htmlFor="checkbox-table-search-2"
+                                                className="sr-only"
+                                            >
+                                                checkbox
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <th
+                                        scope="row"
+                                        className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                                     >
-                                        checkbox
-                                    </label>
-                                </div>
-                            </td>
-                            <th
-                                scope="row"
-                                className="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                            >
-                                <img
-                                    className="w-10 h-10 rounded-full"
-                                    src="./icons/perfil.jpg"
-                                    alt="Thomas Lean"
-                                />
-                                <div className="ps-3">
-                                    <div className="text-base font-semibold">
-                                        Marcus Vinicius
-                                    </div>
-                                    <div className="font-normal text-gray-500">
-                                        marcus@gmail.com
-                                    </div>
-                                </div>
-                            </th>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center">
-                                    11 96181-9664
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 cursor-pointer">
-                                <div onClick={() => router.push(`/users/1`)}>
-                                    <a
-                                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                                    >
-                                        Edit user
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
+                                        <img
+                                            className="w-10 h-10 rounded-full"
+                                            src="./icons/user.png"
+                                            alt="Thomas Lean"
+                                        />
+                                        <div className="ps-3">
+                                            <div className="text-base font-semibold">
+                                                {item.name}
+                                            </div>
+                                            <div className="font-normal text-gray-500">
+                                                {item.email}
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center">
+                                            {item.phone}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 cursor-pointer">
+                                        <div onClick={() => router.push(`/users/${item._id}`)}>
+                                            <a
+                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                                            >
+                                                Editar usuário
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )
+                        })
+                            :
+                            <span>Não encontramos usuários cadastrados</span>}
                     </tbody>
                 </Table>
             </div>

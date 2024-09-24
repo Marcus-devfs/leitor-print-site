@@ -11,7 +11,7 @@ interface UserAuthenticationObject {
 
 const Authentication: React.FC = () => {
 
-    const { handleVerifyUser, userData, loading, setLoading, setAlertData } = useAppContext()
+    const { handleLogin, userData, loading, setLoading, setAlertData } = useAppContext()
     const [userAuthentication, setUserAuthentication] = useState({
         email: '',
         password: ''
@@ -64,8 +64,7 @@ const Authentication: React.FC = () => {
         if (verifyInputs()) {
             setLoading(true)
             try {
-                // const result = await handleVerifyUser(userAuthentication as UserAuthenticationObject)
-                const result = { success: true, message: 'Tudo certo!' };
+                const result = await handleLogin(userAuthentication as UserAuthenticationObject)
 
                 if (result) {
                     if (!result?.success) {
@@ -83,7 +82,7 @@ const Authentication: React.FC = () => {
                             message: result?.message,
                             type: 'success'
                         })
-                        await handleVerifyUser(userAuthentication)
+                        await handleLogin(userAuthentication)
                         return
                     }
                 } else {

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 export const Navbar: React.FC = () => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-    const { userData, setUserData } = useAppContext()
+    const { userData, logout } = useAppContext()
 
     const toggleUserMenu = () => {
         setIsUserMenuOpen(!isUserMenuOpen);
@@ -98,13 +98,13 @@ export const Navbar: React.FC = () => {
                             >
                                 <div className="px-4 py-3">
                                     <span className="block text-sm text-gray-500 truncate">
-                                        {userData?.nome || 'Marcus Silva'}
+                                        {userData?.name || 'Marcus Silva'}
                                     </span>
                                 </div>
                                 <ul className="py-2">
                                     <li>
                                         <Link
-                                            href="#"
+                                            href="/dashboard"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Início
@@ -112,7 +112,7 @@ export const Navbar: React.FC = () => {
                                     </li>
                                     <li>
                                         <Link
-                                            href="#"
+                                            href={`/users/${userData._id}`}
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Meus Dados
@@ -129,7 +129,7 @@ export const Navbar: React.FC = () => {
                                     <li>
                                         <div
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100  cursor-pointer"
-                                            onClick={() => setUserData(null)}>
+                                            onClick={() => logout()}>
                                             Sair
                                         </div>
                                     </li>
