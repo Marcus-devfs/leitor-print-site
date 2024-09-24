@@ -74,6 +74,43 @@ const AnalyticsEdit: React.FC = () => {
         }
     }
 
+    const handleImageProcessing = (file: File): Promise<File> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Ajustar o tamanho do canvas
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                if (!ctx) return
+                // Desenhar a imagem no canvas
+                ctx.drawImage(img, 0, 0);
+
+                // Converter para escala de cinza
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    data[i] = data[i + 1] = data[i + 2] = avg; // R, G, B
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+
+                // Salvar a imagem processada e retornar
+                canvas.toBlob((blob) => {
+                    const processedFile = new File([blob], file.name, { type: file.type });
+                    resolve(processedFile);
+                });
+            };
+            img.src = URL.createObjectURL(file);
+        });
+    };
+
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
         setAnalyticsData((prevValues) => ({
@@ -438,7 +475,17 @@ const AnalyticsEdit: React.FC = () => {
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Prints</h1>
 
                 <div className="d-flex px-2 py-2">
-                    <Dropzone onFileUpload={(file) => handleAddFile(file)} />
+                    <Dropzone onFileUpload={async (file) => {
+                        const filePreview = URL.createObjectURL(file);
+                        const analyticsId = Array.isArray(id) ? id[0] : id || '';
+                        const processedFile = await handleImageProcessing(file);
+                        if (newAnalytics) {
+                            handleAddFile(file)
+                        } else {
+                            handleFileUpload({ file: processedFile, preview: filePreview }, analyticsId)
+                        }
+                    }
+                    } />
                 </div>
 
                 <div className="d-flex flex-column gap-2">

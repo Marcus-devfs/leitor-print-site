@@ -1,8 +1,9 @@
 import { CryptoModal } from "@/components";
 import { CardIcon } from "@/components/card";
 import { ReactNode, createContext, useContext, useEffect, useReducer, useState } from "react";
-import Cookies from "js-cookie";
+import Cookies from "../../node_modules/@types/js-cookie";
 import { api } from "@/helpers/api";
+import { useRouter } from "next/router";
 
 export interface UserAuthentication {
     email?: string,
@@ -44,6 +45,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         message: '',
         type: ''
     })
+    const router = useRouter()
 
 
     useEffect(() => {
@@ -94,7 +96,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                 const { token } = data.user
                 setUserData(data.user)
 
-                Cookies.set('token', token, { expires: 60 })
+                Cookies.set('token', token, { expires: 120 })
                 api.defaults.headers.Authorization = `Bearer ${token}`
             }
             return data;
@@ -115,6 +117,58 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             setUserData(userData)
         }
     }, [])
+
+
+    const checkTokenExpiration = () => {
+        const token = Cookies.get('token')
+
+        if (token != null) {
+            try {
+                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                const expirationTime = tokenPayload.exp * 1000; // em milissegundos
+                const currentTime = new Date().getTime();
+                const timeUntilExpiration = expirationTime - currentTime;
+                const notificationThreshold = 5 * 60 * 1000;
+
+                if (timeUntilExpiration < 0) {
+                    logout();
+                    setAlertData({
+                        active: true,
+                        title: 'Sessão expirada!',
+                        message: 'Sua sessão expirou. Faça login novamente.',
+                        type: 'alert'
+                    })
+
+                } else if (timeUntilExpiration < notificationThreshold) {
+                    setAlertData({
+                        active: true,
+                        title: 'Seu token está expirando!',
+                        message: 'Seu token está prestes a expirar. Faça login novamente.',
+                        type: 'alert'
+                    })
+                }
+            } catch (error) {
+                console.error('Erro ao decodificar o token:', error);
+                return error
+            }
+        }
+    };
+    useEffect(() => {
+        checkTokenExpiration();
+
+        // Adicione um listener para mudanças de rota
+        const handleRouteChange = () => {
+            checkTokenExpiration();
+        };
+
+        // Adicione o listener
+        router.events.on('routeChangeStart', handleRouteChange);
+
+        // Remova o listener quando o componente for desmontado
+        return () => {
+            router.events.off('routeChangeStart', handleRouteChange);
+        };
+    }, []);
 
 
     return (
