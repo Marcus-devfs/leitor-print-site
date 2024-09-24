@@ -1,7 +1,7 @@
 import { CryptoModal } from "@/components";
 import { CardIcon } from "@/components/card";
 import { ReactNode, createContext, useContext, useEffect, useReducer, useState } from "react";
-import Cookies from "../../node_modules/@types/js-cookie";
+import Cookies from "js-cookie";
 import { api } from "@/helpers/api";
 import { useRouter } from "next/router";
 

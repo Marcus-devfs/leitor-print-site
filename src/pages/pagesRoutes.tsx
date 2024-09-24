@@ -4,6 +4,8 @@ import { ProtectRoute } from '@/context/ProtectRoute';
 import { MenuList } from '@/helpers/menu';
 import Sidebar from '@/components/LeftMenu/LeftMenu';
 import { Navbar } from '@/components/navbar/Navbar';
+import { useAppContext } from '@/context/AppContext';
+import { MenuLadingPage } from '@/helpers/menuLadingPage';
 
 interface PagesRouteProps {
     Component: React.ComponentType<any> & { noPadding?: boolean };
@@ -13,6 +15,7 @@ interface PagesRouteProps {
 
 
 const PagesRoute: FC<PagesRouteProps> = ({ Component, pageProps }) => {
+    const { userData } = useAppContext()
     return (
         <>
             <Head>
@@ -27,9 +30,8 @@ const PagesRoute: FC<PagesRouteProps> = ({ Component, pageProps }) => {
             </Head>
             <ProtectRoute>
                 <div className="bg-gray-100 min-h-screen flex w-full">
-                    <Sidebar menu={MenuList} />
-                    <Navbar />
-                    <div className="flex overflow-auto w-full flex-col gap-8 py-24 px-8 pl-[250px]">
+                    {/* <Navbar menu={userData ? MenuList : MenuLadingPage} /> */}
+                    <div className="flex overflow-auto w-full flex-col gap-8 py-24 px-8">
                         <Component {...pageProps} />
                     </div>
                 </div>
