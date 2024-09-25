@@ -175,8 +175,8 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
                         </div>
 
 
-                        <button className='flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'>
-                            <span>Subir imagens</span>
+                        <button className='text-white flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'>
+                            <span className='text-white'>Subir imagens</span>
                         </button>
                     </div>
                     :
@@ -186,8 +186,8 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
                             <span className='text-gray-800'>Entrar</span>
                         </button>
 
-                        <button className='flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'>
-                            <span>Começe Grátis</span>
+                        <button className='text-white flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'>
+                            <span className='text-white'>Começe Grátis</span>
                         </button>
                     </div>}
 
