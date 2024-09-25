@@ -22,7 +22,6 @@ async function handler(
             }
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, { ...userAuthentication });
-
             if (response?.data) {
                 const { success } = response?.data
 
@@ -34,8 +33,10 @@ async function handler(
 
             }
 
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
+            if(error?.response.status === 401){
+                res.status(200).json({ success: false, message: 'Dados inválidos.' });
+            }
             res.status(500).json({ success: false });
         }
     } else {

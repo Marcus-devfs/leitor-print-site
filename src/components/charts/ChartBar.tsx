@@ -36,7 +36,7 @@ const ChartBar: React.FC = () => {
     };
 
     return (
-        <div className="max-w-md w-full bg-white rounded-lg shadow p-4 md:p-6">
+        <div className="w-full bg-white rounded-lg shadow p-4 md:p-6">
             <div className="flex justify-between">
                 <div>
                     <h5 className="leading-none text-3xl font-bold text-gray-900 pb-2">80</h5>

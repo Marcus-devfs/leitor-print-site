@@ -343,7 +343,7 @@ const AnalyticsEdit: React.FC = () => {
                 <div className="flex gap-2 pt-5 w-full justify-end">
 
                     {!newAnalytics && <button
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
+                        className="flex items-center px-4 py-2 bg-[#FF6700] text-white rounded-md"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

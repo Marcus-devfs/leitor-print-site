@@ -73,7 +73,7 @@ const Authentication: React.FC = () => {
                         setAlertData({
                             active: true,
                             title: 'Ocorreu um erro.',
-                            message: result?.message,
+                            message: result?.message || 'Dados inválidos.',
                             type: 'error'
                         })
                         return
@@ -91,7 +91,7 @@ const Authentication: React.FC = () => {
                     setAlertData({
                         active: true,
                         title: 'Ocorreu um erro.',
-                        message: result?.message,
+                        message: result?.message || 'Verifique os dados, e tente novamente.',
                         type: 'error'
                     })
                     return

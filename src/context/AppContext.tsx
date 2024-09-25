@@ -1,7 +1,6 @@
 import { CryptoModal } from "@/components";
 import { CardIcon } from "@/components/card";
 import { ReactNode, createContext, useContext, useEffect, useReducer, useState } from "react";
-import Cookies from "js-cookie";
 import { api } from "@/helpers/api";
 import { useRouter } from "next/router";
 
@@ -52,7 +51,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         async function loadUserFromCookies() {
             setLoading(true)
 
-            const token = Cookies.get('token')
+            const token = localStorage.getItem('token')
 
             try {
                 if (token != 'null') {
@@ -65,7 +64,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                     else setUserData(null);
                 }
             } catch (error) {
-                Cookies.set('token', '', { expires: 60 })
+                localStorage.setItem('token', '')
                 console.log(error)
             } finally {
                 setLoading(false)
@@ -87,19 +86,25 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao verificar o usuário');
+                console.log('aqui')
+                return false
             }
 
             const data = await response.json();
+            console.log('data: ', data)
+
 
             if (data.success) {
                 const { token } = data.user
                 setUserData(data.user)
 
-                Cookies.set('token', token, { expires: 120 })
+                localStorage.setItem('token', token)
                 api.defaults.headers.Authorization = `Bearer ${token}`
+                return { success: true };
+            } else {
+                return { success: false, message: data.message };
             }
-            return data;
+
         } catch (error) {
             console.error('Erro ao verificar o usuário:', error);
             return error
@@ -107,7 +112,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
 
     const logout = () => {
-        Cookies.remove('token')
+        localStorage.removeItem('token')
         setUserData(null)
         delete api.defaults.headers.Authorization
     }
@@ -120,7 +125,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
 
     const checkTokenExpiration = () => {
-        const token = Cookies.get('token')
+        const token = localStorage.getItem('token')
 
         if (token != null) {
             try {

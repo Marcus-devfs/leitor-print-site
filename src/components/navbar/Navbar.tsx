@@ -42,12 +42,12 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
 
                 <div className="flex items-center px-2 py-2 gap-2">
                     <img
-                        src="./icons/avatar-dottie.png"
+                        src="/icons/avatar-dottie.png"
                         className="h-6 me-3 sm:h-12"
                         alt="Flowbite Logo"
                     />
                     <img
-                        src="./icons/logo-dottie.png"
+                        src="/icons/logo-dottie.png"
                         className="h-3 me-2 sm:h-5"
                         alt="Flowbite Logo"
                     />
