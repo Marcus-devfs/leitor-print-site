@@ -29,7 +29,7 @@ const PagesRoute: FC<PagesRouteProps> = ({ Component, pageProps }) => {
             <ProtectRoute>
                 <div className="bg-gray-100 min-h-screen flex w-full">
                     {/* <Navbar menu={userData ? MenuList : MenuLadingPage} /> */}
-                    <div className="flex overflow-auto w-full flex-col gap-8 py-12">
+                    <div className="flex overflow-auto w-full flex-col gap-8 py-12 h-full pt-32">
                         <Component {...pageProps} />
                     </div>
                 </div>

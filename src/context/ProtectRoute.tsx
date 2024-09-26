@@ -37,7 +37,9 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
                     <Authentication />
                 ) : (
                     // Renderiza a página inicial se não estiver autenticado e não estiver na página de autenticação
-                    <Home />
+                    <div className="flex overflow-auto w-full flex-col gap-8 py-12">
+                        <Home />
+                    </div>
                 )}
             </div>
         </div>

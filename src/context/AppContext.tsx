@@ -86,13 +86,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             });
 
             if (!response.ok) {
-                console.log('aqui')
                 return false
             }
-
             const data = await response.json();
-            console.log('data: ', data)
-
 
             if (data.success) {
                 const { token } = data.user
@@ -100,6 +96,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
                 localStorage.setItem('token', token)
                 api.defaults.headers.Authorization = `Bearer ${token}`
+
+                router.push('/dashboard')
+                
                 return { success: true };
             } else {
                 return { success: false, message: data.message };
