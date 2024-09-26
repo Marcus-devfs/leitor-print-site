@@ -8,8 +8,8 @@ export default function Home() {
   const router = useRouter()
 
   return (
-    <div className="flex flex-col gap-4 w-full pt-10 justify-center">
-      <h1 className="text-gray-700 font-light text-xl text-center">Consolide os Resultados de Suas Campanhas
+    <div className="flex flex-col gap-4 w-full pt-10 justify-center" >
+      <h1 className="text-gray-700 font-light text-2xl text-center">Consolide os Resultados de Suas Campanhas
         Com Influenciadores em Três Passos</h1>
     </div>
   );

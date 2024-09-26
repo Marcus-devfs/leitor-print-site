@@ -175,7 +175,8 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
                         </div>
 
 
-                        <button className='text-white flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'>
+                        <button className='text-white flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'
+                        onClick={() => router.push('/upload-files')}>
                             <span className='text-white'>Subir imagens</span>
                         </button>
                     </div>

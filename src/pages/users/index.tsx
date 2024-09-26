@@ -1,4 +1,4 @@
-import { SectionHeader } from "@/components"
+import { Body, SectionHeader } from "@/components"
 import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
 import { UserDataObject } from "@/helpers/types"
@@ -54,7 +54,7 @@ const Users: React.FC = () => {
 
 
     return (
-        <>
+        <Body>
             <SectionHeader title="Usuários" />
             <div className="flex w-full h-full flex-col">
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white py-2 px-2">
@@ -149,7 +149,7 @@ const Users: React.FC = () => {
                     </tbody>
                 </Table>
             </div>
-        </>
+        </Body>
     )
 
 }

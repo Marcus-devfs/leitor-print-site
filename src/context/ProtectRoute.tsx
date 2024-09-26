@@ -29,7 +29,7 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
     return (
         <div className="bg-gray-100 min-h-screen flex w-full">
             <Navbar menu={userData ? MenuList : MenuLadingPage} />
-            <div className="flex overflow-auto w-full flex-col gap-8 py-24 px-8">
+            <div className="flex overflow-auto w-full flex-col gap-8 py-24">
                 {isAuthenticated ? (
                     children // Renderiza os filhos se autenticado
                 ) : loading ? <Loading /> : isAuthenticationPage ? (

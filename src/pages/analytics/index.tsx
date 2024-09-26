@@ -1,4 +1,4 @@
-import { SectionHeader } from "@/components"
+import { Body, SectionHeader } from "@/components"
 import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
 import { AnalyticsObjectData } from "@/helpers/types"
@@ -53,7 +53,7 @@ const Budget: React.FC = () => {
     ];
 
     return (
-        <>
+        <Body>
             <SectionHeader title="Arquivos e Campanhas" />
             <div className="flex w-full h-full flex-col">
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
@@ -144,7 +144,7 @@ const Budget: React.FC = () => {
                     </Table>
                     : <span className="text-gray-600">Não encontramos Análises cadastrados.</span>}
             </div>
-        </>
+        </Body>
     )
 
 }

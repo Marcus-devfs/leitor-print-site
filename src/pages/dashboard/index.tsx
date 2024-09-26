@@ -11,9 +11,9 @@ const Dashboard: React.FC = () => {
     const router = useRouter()
 
     return (
-        <>
+        <div className="px-8 flex flex-col gap-4">
             <SectionHeader title="Seja Bem-Vindo(a)" />
-            <div className="flex gap-4">
+            <div className="flex gap-4 ">
 
                 <div className="flex gap-4 w-full">
                     <div className="flex py-4 w-full px-4 border bg-white flex-col gap-3 rounded-lg border-slate-300 border
@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
                 <ChartPie />
                 <ChartBar />
             </div>
-        </>
+        </div>
     )
 
 }

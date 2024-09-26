@@ -1,4 +1,4 @@
-import { SectionHeader } from "@/components"
+import { Body, SectionHeader } from "@/components"
 import { Button } from "@/components/button/Button"
 import { useAppContext } from "@/context/AppContext"
 import { CustomerDataObject } from "@/helpers/types"
@@ -55,7 +55,7 @@ const CompanyEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
-        } finally{
+        } finally {
             setLoading(false)
         }
     }
@@ -101,7 +101,7 @@ const CompanyEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar o cliente:', error);
             return error
-        } finally{
+        } finally {
             setLoading(false)
         }
     }
@@ -143,7 +143,7 @@ const CompanyEdit: React.FC = () => {
         } catch (error) {
             console.error('Erro ao verificar o cliente:', error);
             return error
-        } finally{
+        } finally {
             setLoading(false)
         }
     }
@@ -184,13 +184,13 @@ const CompanyEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
-        } finally{
+        } finally {
             setLoading(false)
         }
     }
 
     return (
-        <>
+        <Body>
             <SectionHeader title='Editar Cliente' />
             <div className="bg-white rounded py-5 px-6">
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Dados do Cliente</h1>
@@ -304,7 +304,7 @@ const CompanyEdit: React.FC = () => {
                     </button>}
                 </div>
             </div>
-        </>
+        </Body>
     )
 
 }

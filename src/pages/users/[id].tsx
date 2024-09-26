@@ -1,4 +1,4 @@
-import { SectionHeader } from "@/components"
+import { Body, SectionHeader } from "@/components"
 import { Button } from "@/components/button/Button"
 import { useAppContext } from "@/context/AppContext"
 import { UserDataObject } from "@/helpers/types"
@@ -203,7 +203,7 @@ const UserEdit: React.FC = () => {
     }
 
     return (
-        <>
+        <Body>
             <SectionHeader title={'Usuário'} />
             <div className="bg-white rounded py-5 px-6">
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Dados do Usuário</h1>
@@ -306,7 +306,7 @@ const UserEdit: React.FC = () => {
                     </button>}
                 </div>
             </div>
-        </>
+        </Body>
     )
 
 }
