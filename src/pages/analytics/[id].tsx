@@ -1,6 +1,6 @@
 import { SectionHeader } from "@/components"
 import { Button } from "@/components/button/Button"
-import Dropzone from "@/components/dropzone/Dropzone"
+import DropzoneData from "@/components/dropzone/Dropzone"
 import { Table } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
 import { api } from "@/helpers/api"
@@ -486,8 +486,8 @@ const AnalyticsEdit: React.FC = () => {
             <div className="bg-white rounded py-5 px-6">
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Prints</h1>
 
-                <div className="d-flex px-2 py-2">
-                    <Dropzone onFileUpload={async (file) => {
+                {/* <div className="d-flex px-2 py-2">
+                    <DropzoneData onFileUpload={async (file) => {
                         const filePreview = URL.createObjectURL(file);
                         const analyticsId = Array.isArray(id) ? id[0] : id || '';
                         // const processedFile = await handleImageProcessing(file);
@@ -498,7 +498,7 @@ const AnalyticsEdit: React.FC = () => {
                         }
                     }
                     } />
-                </div>
+                </div> */}
 
                 <div className="d-flex flex-column gap-2">
                     <h5 className="text-gray-900 text-1xl font-bold pb-2 pt-8">Todos os prints: </h5>

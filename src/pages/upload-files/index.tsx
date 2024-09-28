@@ -1,28 +1,33 @@
-import { SectionHeader } from "@/components"
 import Dropzone from "@/components/dropzone/Dropzone"
-import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
-import { useAppContext } from "@/context/AppContext"
-import { AnalyticsObjectData } from "@/helpers/types"
-import { randomUUID } from "crypto"
-import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
+import FormDetailsFile from "./components/FormDetailsFile";
 
 interface FileWithPreview {
     file: File;
     preview: string;
+    selected: boolean
 }
 
 const UploadFiles: React.FC = () => {
     const [newFiles, setNewFiles] = useState<FileWithPreview[]>([])
-    const { setAlertData } = useAppContext()
-    const router = useRouter()
 
-    console.log(newFiles)
+    const handleAddFile = (files: File[]) => {
+        const fileWithPreview = files.map(file => ({
+            file,
+            preview: URL.createObjectURL(file),
+            selected: false
+        }))
 
-    const handleAddFile = (file: File) => {
-        const filePreview = URL.createObjectURL(file);
-        setNewFiles((prevFiles) => [...prevFiles, { file, preview: filePreview }]);
+        setNewFiles((prevFiles) => [...prevFiles, ...fileWithPreview]);
     };
+
+    const handleCheckboxChange = useCallback((index: number, active: boolean) => {
+        setNewFiles(prevFiles => {
+            const updatedFiles = [...prevFiles];
+            updatedFiles[index].selected = active
+            return updatedFiles;
+        });
+    }, []);
 
     return (
         <div className="relative">
@@ -36,18 +41,33 @@ const UploadFiles: React.FC = () => {
                                 </h1></h1>
                         </div>
 
-                        <Dropzone onFileUpload={(file) => handleAddFile(file)} />
+                        <Dropzone onFileUpload={(files) => handleAddFile(files)} />
                     </div>
                     :
-                    <div className="flex gap-2 px-8">
+                    <div className="flex gap-4 px-8">
                         {newFiles.map((fileData, index) => (
-                            <div key={index} className="bg-white border-b flex px-2 py-2 flex-col">
+                            <div key={index} className={`border-b flex px-2 py-2 flex-col ${fileData.selected ? "bg-[#FFE5B5]" : "bg-white"
+                                } items-center gap-4`}>
 
-                                <div className="cursor-pointer w-full flex justify-between gap-2 align-center">
+                                <div className="cursor-pointer w-full flex justify-between gap-2 align-center pb-4 px-2 py-2">
+
+                                    <div className="flex items-center h-5">
+                                        <input
+                                            id={`file-checkbox-${index}`}
+                                            type="checkbox"
+                                            checked={fileData.selected}
+                                            onChange={(e) => {
+                                                handleCheckboxChange(index, e.target.checked)
+                                                console.log(e.target.checked)
+                                            }}
+                                            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300"
+                                        />
+                                    </div>
+
                                     <span className="text-gray-600 text-sm">{fileData?.file?.name}</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        className="h-6 w-6 text-red-600 hover:text-red-500"
+                                        className="h-5 w-5 bg-red-600 text-white rounded-full px-1 py-1 hover:bg-red-400"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
@@ -67,7 +87,7 @@ const UploadFiles: React.FC = () => {
 
                                 <img
                                     src={fileData.preview}
-                                    className="w-16 md:w-32  max-h-36 object-cover"
+                                    className="w-40 md:w-56  max-h-64 object-contain"
                                     alt={`Preview ${index}`}
                                 />
                             </div>
@@ -76,16 +96,21 @@ const UploadFiles: React.FC = () => {
                 }
             </div>
 
-            <div className="flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20">
-                <span className="fw-bold text-gray-800 text-lg pb-4">Especificações</span>
-                <li className="text-slate-600">Resolução</li>
-                <li className="text-slate-600">Prints estendidos</li>
-                <li className="text-slate-600">XPTO</li>
-            </div>
+            {newFiles.length > 0 ? (
+                <FormDetailsFile />
+            ) : (
+                <div className="flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20">
+                    <span className="fw-bold text-gray-800 text-lg pb-4">Especificações</span>
+                    <li className="text-slate-600">Resolução</li>
+                    <li className="text-slate-600">Prints estendidos</li>
+                    <li className="text-slate-600">XPTO</li>
+                </div>
+            )}
 
         </div>
     )
 
 }
+
 
 export default UploadFiles

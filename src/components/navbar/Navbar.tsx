@@ -118,6 +118,11 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
                 {userData ?
 
                     <div className='flex gap-2 w-100'>
+                        <button className='text-white flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'
+                            onClick={() => router.push('/upload-files')}>
+                            <span className='text-white'>Subir imagens</span>
+                        </button>
+
                         <div className="relative">
                             <button className='flex py-2 px-4 rounded border rounded-lg border-black align-center justify-center'
                                 onClick={toggleUserMenu}>
@@ -175,10 +180,6 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
                         </div>
 
 
-                        <button className='text-white flex py-2 px-4 rounded bg-[#FF6700] align-center justify-center rounded-lg'
-                        onClick={() => router.push('/upload-files')}>
-                            <span className='text-white'>Subir imagens</span>
-                        </button>
                     </div>
                     :
                     <div className='flex gap-2 w-100'>
