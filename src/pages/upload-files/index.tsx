@@ -15,7 +15,8 @@ const UploadFiles: React.FC = () => {
         const fileWithPreview = files.map(file => ({
             file,
             preview: URL.createObjectURL(file),
-            selected: false
+            selected: false,
+
         }))
 
         setNewFiles((prevFiles) => [...prevFiles, ...fileWithPreview]);
@@ -44,7 +45,7 @@ const UploadFiles: React.FC = () => {
                         <Dropzone onFileUpload={(files) => handleAddFile(files)} />
                     </div>
                     :
-                    <div className="flex gap-4 px-8">
+                    <div className="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 pl-6 max-w-[72%]">
                         {newFiles.map((fileData, index) => (
                             <div key={index} className={`border-b flex px-2 py-2 flex-col ${fileData.selected ? "bg-[#FFE5B5]" : "bg-white"
                                 } items-center gap-4`}>
@@ -64,7 +65,7 @@ const UploadFiles: React.FC = () => {
                                         />
                                     </div>
 
-                                    <span className="text-gray-600 text-sm">{fileData?.file?.name}</span>
+                                    <span className="text-gray-600 text-sm max-w-36 truncate whitespace-nowrap">{fileData?.file?.name}</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="h-5 w-5 bg-red-600 text-white rounded-full px-1 py-1 hover:bg-red-400"

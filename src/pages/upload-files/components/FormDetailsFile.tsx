@@ -1,22 +1,41 @@
 import { Dropdown } from "@/components";
+import { Button } from "@/components/button/Button";
+import { useAppContext } from "@/context/AppContext";
 import React, { useState } from "react";
 
+interface SelectedOpitions {
+    plataform: string | null
+    format: string | null
+    type: string | null
+}
 const FormDetailsFile: React.FC = () => {
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const { setLoading, loading } = useAppContext()
+    const [selectedOption, setSelectedOption] = useState<SelectedOpitions>({
+        plataform: null,
+        format: null,
+        type: null
+    });
 
-    const handleSelect = (value: string) => {
-        setSelectedOption(value);
-        console.log("Selecionado:", value);
-    };
+    const plataform = [
+        { label: "Youtube", value: "Youtube" },
+        { label: "Instagram", value: "Instagram" },
+        { label: "Tiktok", value: "Tiktok" },
+    ];
 
-    const options = [
-        { label: "Opção 1", value: "option1" },
-        { label: "Opção 2", value: "option2" },
-        { label: "Opção 3", value: "option3" },
+    const format = [
+        { label: "Reels", value: "Reels" },
+        { label: "Stories", value: "Stories" },
+        { label: "Post", value: "Post" },
+    ];
+
+    const type = [
+        { label: "Alimentação", value: "alimentação" },
+        { label: "Ofertas", value: "Ofertas" },
+        { label: "Divulgação de produtos", value: "Divulgação de produtos" },
     ];
 
     return (
-        <div className="flex flex-col gap-2 px-7 py-8 rounded-pill bg-white shadow rounded-lg absolute right-0 top-0 w-96">
+        <div className="flex flex-col gap-2 px-7 py-8 rounded-pill bg-white shadow rounded-lg fixed right-0 top-32 w-96">
             <div className="mb-3">
                 <label htmlFor="influencerEmail" className="block mb-2 text-sm font-medium text-gray-900">
                     Influenciador*
@@ -37,9 +56,9 @@ const FormDetailsFile: React.FC = () => {
                 </label>
                 <Dropdown
                     title="Selecione uma opção"
-                    options={options}
-                    onSelect={handleSelect}
-                    value={selectedOption}
+                    options={plataform}
+                    onSelect={(value) => setSelectedOption({ ...selectedOption, plataform: value })}
+                    value={selectedOption.plataform}
                 />
             </div>
 
@@ -49,9 +68,9 @@ const FormDetailsFile: React.FC = () => {
                 </label>
                 <Dropdown
                     title="Selecione uma opção"
-                    options={options}
-                    onSelect={handleSelect}
-                    value={selectedOption}
+                    options={format}
+                    onSelect={(value) => setSelectedOption({ ...selectedOption, format: value })}
+                    value={selectedOption.format}
                 />
             </div>
 
@@ -73,11 +92,11 @@ const FormDetailsFile: React.FC = () => {
                 <label htmlFor="foodFormat" className="block mb-2 text-sm font-medium text-gray-900">
                     Tipo*
                 </label>
-                 <Dropdown
+                <Dropdown
                     title="Selecione uma opção"
-                    options={options}
-                    onSelect={handleSelect}
-                    value={selectedOption}
+                    options={type}
+                    onSelect={(value) => setSelectedOption({ ...selectedOption, type: value })}
+                    value={selectedOption.type}
                 />
             </div>
 
@@ -94,6 +113,11 @@ const FormDetailsFile: React.FC = () => {
                     placeholder="eX: 250.00"
                     required
                 />
+            </div>
+
+            <div className="flex w-full justify-end py-2 gap-2">
+                <Button deleteButton text="Cancelar" isLoading={loading} />
+                <Button text="Enviar" isLoading={loading} arrowIcon />
             </div>
         </div>
     );

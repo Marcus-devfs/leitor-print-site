@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            <div className="flex gap-2 flex-">
+            <div className="flex gap-4 flex-">
                 <ChartCard />
                 <ChartPie />
                 <ChartBar />

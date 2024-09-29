@@ -1,6 +1,18 @@
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { useState } from 'react';
 import Link from 'next/link';
+
+// Registrar os elementos necessários do Chart.js
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 
 const ChartCard: React.FC = () => {
   const [chartData, setChartData] = useState({
@@ -25,7 +37,7 @@ const ChartCard: React.FC = () => {
   };
 
   return (
-    <div className="max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6 ">
+    <div className="max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6">
       <div className="flex justify-between">
         <div>
           <h5 className="leading-none text-3xl font-bold text-gray-900 pb-2">32.4k</h5>

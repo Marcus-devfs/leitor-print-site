@@ -1,6 +1,10 @@
 import { Pie } from 'react-chartjs-2';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js'; // Adicione esta importação
 import Link from 'next/link';
+
+// Registre os elementos necessários
+Chart.register(ArcElement, Tooltip, Legend);
 
 const ChartPie: React.FC = () => {
   const [chartData, setChartData] = useState({
@@ -54,21 +58,11 @@ const ChartPie: React.FC = () => {
           {/* Dropdown menu */}
           <div id="lastDaysdropdown" className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
             <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-            <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Yesterday
-              </Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Today
-              </Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Last 7 days
-              </Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Last 30 days
-              </Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Last 90 days
-              </Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 90 days</Link>
             </ul>
           </div>
           <a
