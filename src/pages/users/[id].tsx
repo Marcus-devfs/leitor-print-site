@@ -5,18 +5,25 @@ import { UserDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
+
+interface UserData {
+    permissions: string[]
+}
+
 const UserEdit: React.FC = () => {
     const [userData, setUserData] = useState<UserDataObject>({
         name: '',
         email: '',
         phone: '',
         password: null,
-        confirmPassword: null
+        confirmPassword: null,
+        permissions: []
     })
-    const { setAlertData, setLoading, loading } = useAppContext()
+    const { setAlertData, setLoading, loading, userData: user } = useAppContext()
     const router = useRouter()
     const { id } = router.query
     const newUser = id === 'new'
+    const isAdmin = user.permissions.includes('admin')
 
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -25,6 +32,19 @@ const UserEdit: React.FC = () => {
             [e.target.name]: e.target.value,
         }))
     }
+
+    const handleCheckboxChange = (value: string) => {
+
+        const alreadySelected = userData?.permissions?.includes(value);
+        const updatedValues = alreadySelected
+            ? userData?.permissions?.filter((perm) => perm !== value)
+            : [...userData?.permissions, value];
+
+        setUserData({ ...userData, permissions: updatedValues });
+    };
+
+    console.log(userData)
+
 
     const getUser = async () => {
         setLoading(true)
@@ -49,14 +69,16 @@ const UserEdit: React.FC = () => {
             const data = await response.json();
 
             if (data.success) {
-                const { name, email, phone } = data.user
+                const { name, email, phone, permissions } = data.user
                 setUserData({
                     name,
                     email,
                     phone,
                     password: '',
-                    confirmPassword: ''
+                    confirmPassword: '',
+                    permissions
                 });
+
             }
 
         } catch (error) {
@@ -136,13 +158,14 @@ const UserEdit: React.FC = () => {
             const data = await response.json();
 
             if (data.success) {
-                const { name, email, phone } = data.user
+                const { name, email, phone, permissions } = data.user
                 setUserData({
                     name,
                     email,
                     phone,
                     password: '',
-                    confirmPassword: ''
+                    confirmPassword: '',
+                    permissions
                 });
 
                 setAlertData({
@@ -279,22 +302,55 @@ const UserEdit: React.FC = () => {
                         onChange={handleChange}
                     />
                 </div>
-                <div className="flex items-start mb-6">
-                    <div className="flex items-center h-5">
-                        <input
-                            name="active"
-                            type="checkbox"
-                            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-200 dark:border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
-                            required
-                            onChange={handleChange}
-                        />
-                    </div>
+
+                {isAdmin && <>
                     <label htmlFor="remember" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                         <div className="text-gray-800">
-                            Ativo
+                            Permissões
                         </div>
                     </label>
-                </div>
+
+                    <div className="flex mb-3 mt-3 gap-3">
+                        <div className="flex items-start gap-1">
+
+                            <label htmlFor="remember" className="font-light ms-2 text-sm font-medium">
+                                <div className="font-light text-black">
+                                    Cliente
+                                </div>
+                            </label>
+
+                            <div className="flex items-center h-5">
+                                <input
+                                    name="client"
+                                    type="checkbox"
+                                    className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-200 dark:border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                                    checked={userData.permissions?.includes('client')}
+                                    onChange={() => handleCheckboxChange('client')}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-start mb-6">
+
+                            <label htmlFor="remember" className="font-light ms-2 text-sm font-medium">
+                                <div className="font-light text-black">
+                                    Adminstrador
+                                </div>
+                            </label>
+
+                            <div className="flex items-center h-5">
+                                <input
+                                    name="admin"
+                                    type="checkbox"
+                                    className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-200 dark:border-gray-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                                    checked={userData.permissions?.includes('admin')}
+                                    onChange={() => handleCheckboxChange('admin')}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </>}
+
                 <div className="flex gap-2">
                     <Button arrowIcon={!loading} isLoading={loading} text="Salvar" onClick={() => newUser ? handleCreate() : handleUpdate()} />
 

@@ -1,6 +1,8 @@
 import Dropzone from "@/components/dropzone/Dropzone"
 import React, { useCallback, useState } from "react"
 import FormDetailsFile from "./components/FormDetailsFile";
+import { api } from "@/helpers/api";
+import { useAppContext } from "@/context/AppContext";
 
 interface FileWithPreview {
     file: File;
@@ -9,6 +11,7 @@ interface FileWithPreview {
 }
 
 const UploadFiles: React.FC = () => {
+    const { setLoading, loading, setAlertData } = useAppContext()
     const [newFiles, setNewFiles] = useState<FileWithPreview[]>([])
 
     const handleAddFile = (files: File[]) => {
@@ -21,6 +24,51 @@ const UploadFiles: React.FC = () => {
 
         setNewFiles((prevFiles) => [...prevFiles, ...fileWithPreview]);
     };
+
+    const handleFileUpload = async () => {
+        setLoading(true)
+        try {
+            let ok = true
+            if (newFiles.length > 0) {
+                for (let file of newFiles) {
+                    const fileData = file.file
+                    const formData = new FormData()
+                    formData?.append('file', fileData, encodeURIComponent(fileData?.name))
+
+                    const response = await api.post(`/file/upload?analyticsId=${1}`, formData);
+                    console.log(response)
+                    const { success } = response.data
+                    if (!success) ok = false
+                }
+
+                if (ok) {
+                    setAlertData({
+                        active: true,
+                        title: 'Arquivos enviados para processamento!',
+                        message: 'Os arquivos foram enviados, e estão sendo processados. Assim que for finalizado, você será avisado por e-mail.',
+                        type: 'success'
+                    })
+                    return true
+                } else {
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro ao enviar arquivos.',
+                        message: 'Tente novamente ou entre em contato conosco para obter suporte.',
+                        type: 'error'
+                    })
+                    return true
+                }
+            } else {
+                return false
+            }
+        } catch (error) {
+            console.error('Erro no upload:', error);
+            return false
+        } finally {
+            setLoading(false)
+        }
+    };
+
 
     const handleCheckboxChange = useCallback((index: number, active: boolean) => {
         setNewFiles(prevFiles => {
@@ -98,7 +146,7 @@ const UploadFiles: React.FC = () => {
             </div>
 
             {newFiles.length > 0 ? (
-                <FormDetailsFile />
+                <FormDetailsFile handleUpload={handleFileUpload} />
             ) : (
                 <div className="flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20">
                     <span className="fw-bold text-gray-800 text-lg pb-4">Especificações</span>

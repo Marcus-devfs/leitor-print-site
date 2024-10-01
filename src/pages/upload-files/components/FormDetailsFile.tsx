@@ -8,7 +8,13 @@ interface SelectedOpitions {
     format: string | null
     type: string | null
 }
-const FormDetailsFile: React.FC = () => {
+
+interface FormsProps {
+    handleUpload: () => Promise<boolean>
+}
+
+
+const FormDetailsFile: React.FC<FormsProps> = ({ handleUpload }) => {
     const { setLoading, loading } = useAppContext()
     const [selectedOption, setSelectedOption] = useState<SelectedOpitions>({
         plataform: null,
@@ -117,7 +123,7 @@ const FormDetailsFile: React.FC = () => {
 
             <div className="flex w-full justify-end py-2 gap-2">
                 <Button deleteButton text="Cancelar" isLoading={loading} />
-                <Button text="Enviar" isLoading={loading} arrowIcon />
+                <Button text="Enviar" isLoading={loading} arrowIcon onClick={handleUpload} />
             </div>
         </div>
     );

@@ -5,6 +5,7 @@ export interface UserDataObject {
     phone: string | null
     password?: string | null
     confirmPassword?: string | null
+    permissions: string[]
 }
 
 
