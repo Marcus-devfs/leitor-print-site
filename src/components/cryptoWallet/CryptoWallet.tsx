@@ -31,12 +31,12 @@ export const CryptoModal: React.FC<CryptoModalProps> = ({ isOpen, closeModal, ch
             id="crypto-modal"
             className={`fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-screen bg-black bg-opacity-50 ${isOpen ? 'block' : 'hidden'}`}
         >
-            <div className="relative p-1 w-full max-w-sm max-h-full overflow-y-auto bg-white rounded-lg shadow-lg">
+            <div className="relative p-1 w-full gap-2 max-w-sm max-h-full overflow-y-auto bg-white rounded-lg shadow-lg">
                 <div className="relative">
-                    <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                    <div className="flex items-center gap-2 justify-between p-4 md:p-5 border-b rounded-t">
+                        <p className="whitespace-nowrap font-semibold text-gray-900">
                             {title}
-                        </h3>
+                        </p>
                         <button
                             type="button"
                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center"

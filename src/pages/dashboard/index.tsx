@@ -19,18 +19,18 @@ const Dashboard: React.FC = () => {
                     <div className="flex py-4 w-full px-4 border bg-white flex-col gap-3 rounded-lg border-slate-300 border
                 cursor-pointer hover:bg-gray-100 shadow-lg" onClick={() => router.push(`/users/${userData._id}`)}>
                         <h2 className="text-gray-700 font-bold text-xl">Meus Dados</h2>
-                        <span className="text-gray-400">Meu Perfil.</span>
+                        <span className="text-gray-400">Atualize seus dados e altere sua senha</span>
                     </div>
 
                     <div className="flex py-4 px-4 w-full border bg-white flex-col gap-3 rounded-lg border-slate-300 border
                 cursor-pointer hover:bg-gray-100 shadow-lg" onClick={() => router.push('/analytics')}>
-                        <h2 className="text-gray-700 font-bold text-xl">Análise de Dados</h2>
-                        <span className="text-gray-400">Faça sua análise, anexe os prints e receba os dados de forma automatizada.</span>
+                        <h2 className="text-gray-700 font-bold text-xl">Meus Arquivos Enviados</h2>
+                        <span className="text-gray-400">Veja suas análises de dados das imagens enviadas</span>
                     </div>
                     <div className="flex py-4 px-4 w-full border bg-white flex-col gap-3 rounded-lg border-slate-300 border
-                cursor-pointer hover:bg-gray-100 shadow-lg" onClick={() => router.push('/users')}>
-                        <h2 className="text-gray-700 font-bold text-xl">Meus Clientes</h2>
-                        <span className="text-gray-400">Meus Leads de Clientes.</span>
+                cursor-pointer hover:bg-gray-100 shadow-lg" onClick={() => router.push('/upload-files')}>
+                        <h2 className="text-gray-700 font-bold text-xl">Subir Imagens</h2>
+                        <span className="text-gray-400">Faça upload de novas imagens para suas análises</span>
                     </div>
 
                 </div>

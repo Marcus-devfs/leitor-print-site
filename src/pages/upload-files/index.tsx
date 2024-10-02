@@ -11,7 +11,7 @@ interface FileWithPreview {
 }
 
 const UploadFiles: React.FC = () => {
-    const { setLoading, loading, setAlertData } = useAppContext()
+    const { setLoading, userData, setAlertData } = useAppContext()
     const [newFiles, setNewFiles] = useState<FileWithPreview[]>([])
 
     const handleAddFile = (files: File[]) => {
@@ -35,7 +35,7 @@ const UploadFiles: React.FC = () => {
                     const formData = new FormData()
                     formData?.append('file', fileData, encodeURIComponent(fileData?.name))
 
-                    const response = await api.post(`/file/upload?analyticsId=${1}`, formData);
+                    const response = await api.post(`/file/upload?userId=${userData._id}`, formData);
                     console.log(response)
                     const { success } = response.data
                     if (!success) ok = false
