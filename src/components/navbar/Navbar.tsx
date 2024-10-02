@@ -1,7 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 
 interface MenuItem {
@@ -22,20 +22,28 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const { userData, logout } = useAppContext()
     const router = useRouter()
+    const buttonRef = useRef<HTMLButtonElement>(null)
+    const dropMenuRef = useRef<HTMLDivElement>(null)
 
     const toggleUserMenu = () => {
         setIsUserMenuOpen(!isUserMenuOpen);
     };
 
-    const [isDropdownOpen, setIsDropdownOpen] = useState({ active: false, id: '' });
-
-    const toggleDropdown = (menuId?: string) => {
-        if (isDropdownOpen.active && isDropdownOpen.id === menuId) {
-            setIsDropdownOpen({ active: false, id: '' });
-        } else {
-            setIsDropdownOpen({ active: true, id: menuId || '' });
+    useEffect(() => {
+        const handleClickOutSide = (event: MouseEvent) => {
+            if ((buttonRef.current && !buttonRef.current.contains(event.target as Node)) &&
+                (dropMenuRef.current && !dropMenuRef.current.contains(event.target as Node))) {
+                setIsUserMenuOpen(false);
+            }
         }
-    };
+
+        document.addEventListener('mousedown', handleClickOutSide)
+
+        return () => {
+            document.addEventListener('mousedown', handleClickOutSide)
+        }
+
+    }, [])
 
     return (
         <nav className="bg-white w-full border-gray-200 dark:bg-white fixed z-10 shadow-lg">
@@ -87,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
 
                         <div className="relative">
                             <button className='flex py-2 px-4 rounded border rounded-lg border-black align-center justify-center'
-                                onClick={toggleUserMenu}>
+                                onClick={toggleUserMenu} ref={buttonRef}>
                                 <span className='text-gray-800'>Minha conta</span>
                             </button>
 
@@ -98,13 +106,13 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
                                     role="menu"
                                     aria-orientation="vertical"
                                     aria-labelledby="user-menu-button"
-                                >
+                                    ref={dropMenuRef}>
                                     <div className="px-4 py-3">
                                         <span className="block text-sm text-gray-500 truncate">
                                             {userData?.name || 'Marcus Silva'}
                                         </span>
                                     </div>
-                                    <ul className="py-2">
+                                    <ul className="py-2" onClick={() => setIsUserMenuOpen(false)}>
                                         <li>
                                             <Link
                                                 href="/dashboard"
