@@ -36,7 +36,6 @@ const UploadFiles: React.FC = () => {
                     formData?.append('file', fileData, encodeURIComponent(fileData?.name))
 
                     const response = await api.post(`/file/upload?userId=${userData._id}`, formData);
-                    console.log(response)
                     const { success } = response.data
                     if (!success) ok = false
                 }
