@@ -21,7 +21,7 @@ async function handler(
                 return res.status(400).json({ success: false, message: 'Invalid analytics data' });
             }
 
-            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/analytics/update/${analyticsId}`, { analyticsData });
+            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/filesData/update/${analyticsId}`, { analyticsData });
 
             if (response?.data) {
                 const { success, analytics } = response?.data

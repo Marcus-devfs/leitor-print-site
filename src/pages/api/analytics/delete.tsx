@@ -14,7 +14,7 @@ async function handler(
     if (req.method === 'DELETE') {
         try {
             const { analyticsId } = req.query as { analyticsId: string };
-            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/analytics/delete/${analyticsId}`);
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/filesData/delete/${analyticsId}`);
             const { success } = response?.data
 
             if (success) {

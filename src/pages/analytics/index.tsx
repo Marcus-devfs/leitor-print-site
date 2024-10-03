@@ -1,13 +1,13 @@
 import { Body, SectionHeader } from "@/components"
 import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
-import { AnalyticsObjectData } from "@/helpers/types"
+import { AnalyticsObjectData, FilesAnalyticsObjectData } from "@/helpers/types"
 import { randomUUID } from "crypto"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
 const Budget: React.FC = () => {
-    const [analytics, setAnalytics] = useState<AnalyticsObjectData[]>([])
+    const [analytics, setAnalytics] = useState<FilesAnalyticsObjectData[]>([])
     const { setAlertData } = useAppContext()
     const router = useRouter()
 
@@ -34,8 +34,8 @@ const Budget: React.FC = () => {
             const data = await response.json();
 
             if (data.success) {
-                console.log(data.analytics)
-                setAnalytics(data.analytics);
+                console.log(data.filesData)
+                setAnalytics(data.filesData);
             }
 
         } catch (error) {
@@ -48,8 +48,7 @@ const Budget: React.FC = () => {
     }, [])
 
     const dropdownItems = [
-        { label: 'Novo', href: '/analytics/new' },
-        { label: 'Deletar Análise', href: '#' },
+        { label: 'Novo', href: '/analytics/new' }
     ];
 
     return (
@@ -57,8 +56,8 @@ const Budget: React.FC = () => {
             <SectionHeader title="Arquivos e Campanhas" />
             <div className="flex w-full h-full flex-col">
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
-                    <TableDropdownMenu items={dropdownItems} />
-                    <TableSearchInput placeholder="Buscar por Cliente" />
+                    {/* <TableDropdownMenu items={dropdownItems} /> */}
+                    <TableSearchInput placeholder="Buscar por Influêncer ou Campanha" />
                 </div>
                 {analytics && analytics?.length > 0 ?
                     <Table>
@@ -80,13 +79,16 @@ const Budget: React.FC = () => {
                                     </div>
                                 </th>
                                 <th scope="col" className="px-6 py-3">
-                                    Cliente
+                                    Influêncer
                                 </th>
                                 <th scope="col" className="px-6 py-3">
-                                    Tipo de Análise
+                                    Plataforma
                                 </th>
                                 <th scope="col" className="px-6 py-3">
-                                    Status
+                                    Ação/Campanha
+                                </th>
+                                <th scope="col" className="px-6 py-3">
+                                    Qnt Arquivos
                                 </th>
                                 <th scope="col" className="px-6 py-3">
                                     Ação
@@ -118,22 +120,19 @@ const Budget: React.FC = () => {
                                         >
                                             <div className="ps-3">
                                                 <div className="text-base font-semibold">
-                                                    {item.name}
+                                                    {item.influencer}
                                                 </div>
                                             </div>
                                         </th>
-                                        <td className="px-6 py-4">{item.description}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center">
-                                                <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Em andamento
-                                            </div>
-                                        </td>
+                                        <td className="px-6 py-4">{item.plataform}</td>
+                                        <td className="px-6 py-4">{item.campaign}</td>
+                                        <td className="px-6 py-4">{item.files.length}</td>
                                         <td className="px-6 py-4 cursor-pointer">
                                             <div onClick={() => router.push(`/analytics/${item._id}`)}>
                                                 <a
                                                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                                                 >
-                                                    Editar análise
+                                                    Ver análise
                                                 </a>
                                             </div>
                                         </td>
@@ -142,7 +141,7 @@ const Budget: React.FC = () => {
                             })}
                         </tbody>
                     </Table>
-                    : <span className="text-gray-600">Não encontramos Análises cadastrados.</span>}
+                    : <span className="text-gray-600">Não encontramos Análises.</span>}
             </div>
         </Body>
     )
