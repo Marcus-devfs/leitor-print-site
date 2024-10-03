@@ -18,7 +18,7 @@ const PagesRoute: FC<PagesRouteProps> = ({ Component, pageProps }) => {
                 <meta charSet="utf-8" />
                 <link
                     rel="icon"
-                    href="./icons/analytcs_data.jpg"
+                    href="/icons/logo-dottie.png"
                 />
             </Head>
             <ProtectRoute>
