@@ -78,14 +78,7 @@ const Authentication: React.FC = () => {
                         })
                         return
                     } else {
-                        setAlertData({
-                            active: true,
-                            title: 'Tudo Certo!',
-                            message: result?.message,
-                            type: 'success'
-                        })
                         router.push('/dashboard')
-                        return
                     }
                 } else {
                     setAlertData({

@@ -10,9 +10,27 @@ interface FileWithPreview {
     selected: boolean
 }
 
+export interface SelectedOpitions {
+    plataform: string
+    format: string
+    type: string
+    influencer: string
+    campaign: string
+    followersNumber: string
+}
+
 const UploadFiles: React.FC = () => {
     const { setLoading, userData, setAlertData } = useAppContext()
     const [newFiles, setNewFiles] = useState<FileWithPreview[]>([])
+    const [selectedOption, setSelectedOption] = useState<SelectedOpitions>({
+        influencer: '',
+        campaign: '',
+        followersNumber: '',
+        plataform: '',
+        format: '',
+        type: ''
+    });
+
 
     const handleAddFile = (files: File[]) => {
         const fileWithPreview = files.map(file => ({
@@ -30,12 +48,20 @@ const UploadFiles: React.FC = () => {
         try {
             let ok = true
             if (newFiles.length > 0) {
+
+                let query = `?userId=${userData._id}`
+                if (selectedOption.campaign) query += `&campaign=${selectedOption.campaign}`
+                if (selectedOption.followersNumber) query += `&followersNumber=${selectedOption.followersNumber}`
+                if (selectedOption.format) query += `&format=${selectedOption.format}`
+                if (selectedOption.influencer) query += `&influencer=${selectedOption.influencer}`
+                if (selectedOption.plataform) query += `&plataform=${selectedOption.plataform}`
+                if (selectedOption.type) query += `&type=${selectedOption.type}`
+
                 for (let file of newFiles) {
                     const fileData = file.file
                     const formData = new FormData()
                     formData?.append('file', fileData, encodeURIComponent(fileData?.name))
-
-                    const response = await api.post(`/file/upload?userId=${userData._id}`, formData);
+                    const response = await api.post(`/file/upload${query}`, formData);
                     const { success } = response.data
                     if (!success) ok = false
                 }
@@ -47,6 +73,8 @@ const UploadFiles: React.FC = () => {
                         message: 'Os arquivos foram enviados, e estão sendo processados. Assim que for finalizado, você será avisado por e-mail.',
                         type: 'success'
                     })
+
+                    setNewFiles([])
                     return true
                 } else {
                     setAlertData({
@@ -145,7 +173,12 @@ const UploadFiles: React.FC = () => {
             </div>
 
             {newFiles.length > 0 ? (
-                <FormDetailsFile handleUpload={handleFileUpload} />
+                <FormDetailsFile
+                    handleUpload={handleFileUpload}
+                    handleCancel={() => setNewFiles([])}
+                    selectedOption={selectedOption}
+                    setSelectedOption={setSelectedOption}
+                />
             ) : (
                 <div className="flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20">
                     <span className="fw-bold text-gray-800 text-lg pb-4">Especificações</span>
