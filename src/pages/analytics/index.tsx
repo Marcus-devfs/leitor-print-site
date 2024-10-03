@@ -1,8 +1,7 @@
 import { Body, SectionHeader } from "@/components"
-import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
+import { Table, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
-import { AnalyticsObjectData, FilesAnalyticsObjectData } from "@/helpers/types"
-import { randomUUID } from "crypto"
+import {FilesAnalyticsObjectData } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
@@ -47,16 +46,12 @@ const Budget: React.FC = () => {
         getAnalytics()
     }, [])
 
-    const dropdownItems = [
-        { label: 'Novo', href: '/analytics/new' }
-    ];
 
     return (
         <Body>
             <SectionHeader title="Arquivos e Campanhas" />
             <div className="flex w-full h-full flex-col">
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
-                    {/* <TableDropdownMenu items={dropdownItems} /> */}
                     <TableSearchInput placeholder="Buscar por Influêncer ou Campanha" />
                 </div>
                 {analytics && analytics?.length > 0 ?
