@@ -1,4 +1,4 @@
-import { Body, SectionHeader } from "@/components"
+import { Body, Dropdown, SectionHeader } from "@/components"
 import { Button } from "@/components/button/Button"
 import DropzoneData from "@/components/dropzone/Dropzone"
 import { Table } from "@/components/table"
@@ -229,6 +229,27 @@ const AnalyticsEdit: React.FC = () => {
         }
     }
 
+
+    const plataform = [
+        { label: "Youtube", value: "Youtube" },
+        { label: "Instagram", value: "Instagram" },
+        { label: "Tiktok", value: "Tiktok" },
+    ];
+
+    const format = [
+        { label: "Reels", value: "Reels" },
+        { label: "Stories", value: "Stories" },
+        { label: "Post", value: "Post" },
+    ];
+
+    const verifyLogoPlataform = (plataform: string): string => {
+        if (plataform === 'Youtube') return '/icons/youtube_icon.png'
+        if (plataform === 'Instagram') return '/icons/instagram_icon.png'
+        if (plataform === 'Tiktok') return '/icons/tiktok_icon.png'
+
+        return ''
+    }
+
     return (
         <Body>
             <SectionHeader title='Minha Análise' />
@@ -237,6 +258,13 @@ const AnalyticsEdit: React.FC = () => {
             <div className="bg-white rounded py-5 px-6">
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Resumo</h1>
 
+                <div className="flex w-full pb-5 gap-6 flex-wrap">
+                    <div className="flex gap-2 py-3 px-3 items-center">
+                        <span className="fw-bold text-gray-900 text-2xl">{analyticsData.format}</span>
+                        <img src={verifyLogoPlataform(analyticsData.plataform)}
+                            className="w-auto h-8" />
+                    </div>
+                </div>
                 <div className="flex w-full pb-10 gap-6 flex-wrap">
                     <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
                         <span className="text-gray-700">Impressões:</span>
@@ -387,6 +415,28 @@ const AnalyticsEdit: React.FC = () => {
                             value={analyticsData?.influencer || ''}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Busque pelo cliente no campo acima..."
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900">
+                            Plataforma
+                        </label>
+                        <Dropdown
+                            title="Selecione uma opção"
+                            options={plataform}
+                            value={analyticsData.plataform}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="format" className="block mb-2 text-sm font-medium text-gray-900">
+                            Formato
+                        </label>
+                        <Dropdown
+                            title="Selecione uma opção"
+                            options={format}
+                            value={analyticsData.format}
                         />
                     </div>
 

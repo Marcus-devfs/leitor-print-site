@@ -8,10 +8,10 @@ Chart.register(ArcElement, Tooltip, Legend);
 
 const ChartPie: React.FC = () => {
   const [chartData, setChartData] = useState({
-    labels: ['Product A', 'Product B', 'Product C', 'Product D'],
+    labels: ['Fulano A', 'Fulano B', 'Fulano C', 'Fulano D'],
     datasets: [
       {
-        label: 'Sales',
+        label: 'Engajamento',
         data: [300, 50, 100, 150],
         backgroundColor: [
           'rgb(255, 99, 132)',
@@ -27,8 +27,8 @@ const ChartPie: React.FC = () => {
     <div className="sm:max-w-sm w-full bg-white rounded-lg shadow p-4 md:p-6">
       <div className="flex justify-between">
         <div>
-          <h5 className="leading-none text-3xl font-bold text-gray-900 pb-2">32.4k</h5>
-          <p className="text-base font-normal text-gray-500 dark:text-gray-400">Users this week</p>
+          <h5 className="leading-none text-3xl font-bold text-gray-900 pb-2">10.2k</h5>
+          <p className="text-base font-normal text-gray-500 dark:text-gray-400">Usuários engajados</p>
         </div>
         <div className="flex items-center px-2.5 py-0.5 text-base font-semibold text-green-500 dark:text-green-500 text-center">
           12%
@@ -50,7 +50,7 @@ const ChartPie: React.FC = () => {
             className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-center inline-flex items-center"
             type="button"
           >
-            Last 7 days
+            Últimos 7 dias
             <svg className="w-2.5 m-2.5 ms-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m1 1 4 4 4-4"/>
             </svg>
@@ -58,18 +58,18 @@ const ChartPie: React.FC = () => {
           {/* Dropdown menu */}
           <div id="lastDaysdropdown" className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
             <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 90 days</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Ontem</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hoje</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Últimos 7 dias</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Últimos 30 dias</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Últimos 90 dias</Link>
             </ul>
           </div>
           <a
             href="#"
             className="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2"
           >
-            Users Report
+            Usuários Report
             <svg className="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m1 9 4-4-4-4"/>
             </svg>

@@ -16,10 +16,10 @@ ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip,
 
 const ChartCard: React.FC = () => {
   const [chartData, setChartData] = useState({
-    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    labels: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'],
     datasets: [
       {
-        label: 'Users',
+        label: 'Usuarios',
         data: [12, 19, 3, 5, 2, 3, 15],
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
@@ -41,7 +41,7 @@ const ChartCard: React.FC = () => {
       <div className="flex justify-between">
         <div>
           <h5 className="leading-none text-3xl font-bold text-gray-900 pb-2">32.4k</h5>
-          <p className="text-base font-normal text-gray-500 dark:text-gray-400">Users this week</p>
+          <p className="text-base font-normal text-gray-500 dark:text-gray-400">Alcance VS Frequência por mês</p>
         </div>
         <div className="flex items-center px-2.5 py-0.5 text-base font-semibold text-green-500 dark:text-green-500 text-center">
           12%
@@ -63,7 +63,7 @@ const ChartCard: React.FC = () => {
             className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-center inline-flex items-center"
             type="button"
           >
-            Last 7 days
+            Últimos 7 dias
             <svg className="w-2.5 m-2.5 ms-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m1 1 4 4 4-4" />
             </svg>
@@ -72,19 +72,19 @@ const ChartCard: React.FC = () => {
           <div id="lastDaysdropdown" className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
             <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
               <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Yesterday
+                Ontem
               </Link>
               <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Today
+                Hoje
               </Link>
               <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Last 7 days
+                Últimos 7 dias
               </Link>
               <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Last 30 days
+                Últimos 30 dias
               </Link>
               <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                Last 90 days
+                Últimos 90 dias
               </Link>
             </ul>
           </div>
@@ -92,7 +92,7 @@ const ChartCard: React.FC = () => {
             href="#"
             className="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2"
           >
-            Users Report
+            Report de Alcançe
             <svg className="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m1 9 4-4-4-4" />
             </svg>
