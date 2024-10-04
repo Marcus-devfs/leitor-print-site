@@ -17,6 +17,7 @@ export interface SelectedOpitions {
     influencer: string
     campaign: string
     followersNumber: string
+    marca_cliente: string
 }
 
 const UploadFiles: React.FC = () => {
@@ -28,7 +29,8 @@ const UploadFiles: React.FC = () => {
         followersNumber: '',
         plataform: '',
         format: '',
-        type: ''
+        type: '',
+        marca_cliente: ''
     });
 
 

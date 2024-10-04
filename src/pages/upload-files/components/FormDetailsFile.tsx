@@ -103,9 +103,24 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                 />
             </div>
 
+            <div className="mb-3">
+                <label htmlFor="campaign" className="block mb-2 text-sm font-medium text-gray-900">
+                    Marca / Cliente
+                </label>
+                <input
+                    type="text"
+                    name="marca_cliente"
+                    value={selectedOption.marca_cliente}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="Marca / Cliente"
+                    required
+                />
+            </div>
+
             <div className="mb-3 items-center">
                 <label htmlFor="foodFormat" className="block mb-2 text-sm font-medium text-gray-900">
-                    Tipo*
+                    Categoria*
                 </label>
                 <Dropdown
                     title="Selecione uma opção"
