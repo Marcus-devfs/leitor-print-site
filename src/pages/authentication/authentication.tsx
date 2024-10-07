@@ -78,14 +78,7 @@ const Authentication: React.FC = () => {
                         })
                         return
                     } else {
-                        setAlertData({
-                            active: true,
-                            title: 'Tudo Certo!',
-                            message: result?.message,
-                            type: 'success'
-                        })
                         router.push('/dashboard')
-                        return
                     }
                 } else {
                     setAlertData({
@@ -117,7 +110,7 @@ const Authentication: React.FC = () => {
                     <CardText text="Insira seu e-mail e senha para entrar no sistema." />
                     <Divider />
                     <div>
-                        <form className="">
+                        <form className="mb-6">
                             <div className="mb-3">
                                 <label htmlFor="email-address-icon"
                                     className="block mb-2 text-sm font-medium text-gray-700">Seu e-mail</label>
@@ -139,7 +132,7 @@ const Authentication: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="mb-6">
+                            <div className="mb-3">
                                 <label htmlFor="email-address-icon"
                                     className="block mb-2 text-sm font-medium text-gray-700">Sua senha</label>
                                 <input
@@ -154,9 +147,11 @@ const Authentication: React.FC = () => {
                                 />
                             </div>
 
+                            <span className="text-gray-700 text-light">Não possuí uma conta? <a href="/register" className="text-primary">Cadastre-se agora</a></span>
+                            <span className="flex text-primary justify-center w-full mt-3">Esqueci minha senha</span>
                         </form>
                     </div>
-                    <Button arrowIcon={!loading} isLoading={loading} text="Prosseguir" onClick={() => handleAuthenticationUser()} />
+                    <Button fullWidth arrowIcon={!loading} isLoading={loading} text="Prosseguir" onClick={() => handleAuthenticationUser()} />
                 </Card>
 
             </div>

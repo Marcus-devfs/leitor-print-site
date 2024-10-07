@@ -17,9 +17,9 @@ async function handler(
 
 
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/${userId}`);
-            console.log(response?.data)
 
             const { success, user } = response?.data
+
 
             if (success) {
                 res.status(200).json({success, user});

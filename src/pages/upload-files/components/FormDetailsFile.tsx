@@ -1,20 +1,33 @@
 import { Dropdown } from "@/components";
 import { Button } from "@/components/button/Button";
 import { useAppContext } from "@/context/AppContext";
-import React, { useState } from "react";
+import React, { ChangeEvent, HtmlHTMLAttributes, SetStateAction, useState } from "react";
+import { SelectedOpitions } from "..";
 
-interface SelectedOpitions {
-    plataform: string | null
-    format: string | null
-    type: string | null
+
+
+interface FormsProps {
+    handleUpload: () => Promise<boolean>
+    handleCancel: () => void
+    selectedOption: SelectedOpitions
+    setSelectedOption: React.Dispatch<SetStateAction<SelectedOpitions>>
 }
-const FormDetailsFile: React.FC = () => {
+
+
+const FormDetailsFile: React.FC<FormsProps> = ({
+    handleUpload,
+    handleCancel,
+    selectedOption,
+    setSelectedOption
+}) => {
     const { setLoading, loading } = useAppContext()
-    const [selectedOption, setSelectedOption] = useState<SelectedOpitions>({
-        plataform: null,
-        format: null,
-        type: null
-    });
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedOption((prevSelected) => ({
+            ...prevSelected,
+            [event.target.name]: event.target.value
+        }))
+    }
 
     const plataform = [
         { label: "Youtube", value: "Youtube" },
@@ -42,8 +55,9 @@ const FormDetailsFile: React.FC = () => {
                 </label>
                 <input
                     type="email"
-                    id="influencerEmail"
-                    name="influencerEmail"
+                    name="influencer"
+                    value={selectedOption.influencer}
+                    onChange={handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="@criador-de-conteúdo"
                     required
@@ -80,17 +94,33 @@ const FormDetailsFile: React.FC = () => {
                 </label>
                 <input
                     type="text"
-                    id="campaign"
                     name="campaign"
+                    value={selectedOption.campaign}
+                    onChange={handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="ação / campanha"
                     required
                 />
             </div>
 
+            <div className="mb-3">
+                <label htmlFor="campaign" className="block mb-2 text-sm font-medium text-gray-900">
+                    Marca / Cliente
+                </label>
+                <input
+                    type="text"
+                    name="marca_cliente"
+                    value={selectedOption.marca_cliente}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="Marca / Cliente"
+                    required
+                />
+            </div>
+
             <div className="mb-3 items-center">
                 <label htmlFor="foodFormat" className="block mb-2 text-sm font-medium text-gray-900">
-                    Tipo*
+                    Categoria*
                 </label>
                 <Dropdown
                     title="Selecione uma opção"
@@ -107,8 +137,9 @@ const FormDetailsFile: React.FC = () => {
                 </label>
                 <input
                     type="number"
-                    id="followersCount"
-                    name="followersCount"
+                    name="followersNumber"
+                    value={selectedOption.followersNumber}
+                    onChange={handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="eX: 250.00"
                     required
@@ -116,8 +147,8 @@ const FormDetailsFile: React.FC = () => {
             </div>
 
             <div className="flex w-full justify-end py-2 gap-2">
-                <Button deleteButton text="Cancelar" isLoading={loading} />
-                <Button text="Enviar" isLoading={loading} arrowIcon />
+                <Button deleteButton text="Cancelar" isLoading={loading} onClick={handleCancel} />
+                <Button text="Enviar" isLoading={loading} arrowIcon onClick={handleUpload} />
             </div>
         </div>
     );

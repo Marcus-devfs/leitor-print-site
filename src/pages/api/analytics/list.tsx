@@ -14,11 +14,11 @@ async function handler(
     if (req.method === 'GET') {
         try {
 
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/analytics/list`);
-            const { success, analytics } = response?.data
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/filesData/list`);
+            const { success, filesData } = response?.data
 
             if (success) {
-                res.status(200).json({ success, analytics });
+                res.status(200).json({ success, filesData });
             } else {
                 res.status(400).json({ success: false, message: 'Erro ao carregar análises.' });
             }

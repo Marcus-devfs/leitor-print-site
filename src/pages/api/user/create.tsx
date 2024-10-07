@@ -26,8 +26,6 @@ async function handler(
             if (response?.data) {
                 const { success, newUser } = response?.data
 
-                console.log(response?.data)
-
                 if (success) {
                     return res.status(200).json({ success: true, message: 'Criado.', userId: newUser?._id });
                 } else {

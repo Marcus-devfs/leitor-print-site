@@ -7,6 +7,7 @@ import { MenuList } from "@/helpers/menu";
 import { MenuLadingPage } from "@/helpers/menuLadingPage";
 import Authentication from "@/pages/authentication/authentication";
 import { useRouter } from "next/router";
+import Register from "@/pages/register";
 
 interface ProtectRouteProps {
     children: ReactNode;
@@ -25,6 +26,7 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
     if (!isClient) return null; // Retorna null até que o cliente seja verificado
 
     const isAuthenticationPage = router.asPath === '/authentication';
+    const isRegisterPage = router.asPath === '/register';
 
     return (
         <div className="bg-gray-100 min-h-screen flex w-full">
@@ -35,6 +37,8 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
                 ) : loading ? <Loading /> : isAuthenticationPage ? (
                     // Renderiza a página de autenticação se estiver na página de autenticação
                     <Authentication />
+                ) : isRegisterPage ? (
+                    <Register />
                 ) : (
                     // Renderiza a página inicial se não estiver autenticado e não estiver na página de autenticação
                     <div className="flex overflow-auto w-full flex-col gap-8 py-12">

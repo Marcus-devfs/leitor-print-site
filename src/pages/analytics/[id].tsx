@@ -1,10 +1,11 @@
-import { SectionHeader } from "@/components"
+import { Body, Dropdown, SectionHeader } from "@/components"
 import { Button } from "@/components/button/Button"
 import DropzoneData from "@/components/dropzone/Dropzone"
 import { Table } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
 import { api } from "@/helpers/api"
-import { AnalyticsObjectData, CustomerDataObject } from "@/helpers/types"
+import { AnalyticsObjectData, CustomerDataObject, FilesAnalyticsObjectData } from "@/helpers/types"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
@@ -18,23 +19,42 @@ const AnalyticsEdit: React.FC = () => {
     const [customerName, setCustomerName] = useState<string>('')
     const [customers, setCustomers] = useState<CustomerDataObject[]>([])
     const [newFiles, setNewFiles] = useState<FileWithPreview[]>([])
-    const [analyticsData, setAnalyticsData] = useState<AnalyticsObjectData>({
+    const [analyticsData, setAnalyticsData] = useState<FilesAnalyticsObjectData>({
         _id: '',
-        name: '',
-        customerId: '',
+        createdAt: '',
+        updatedAt: '',
+        keyFile: '',
+        influencer: '',
+        plataform: '',
+        format: '',
+        campaign: '',
+        type: '',
+        followersNumber: 0,
+        impressoes: 0,
+        visualizacoes: 0,
+        alcance: 0,
+        seguidores_alcancados: 0,
+        nao_seguidores_integram: 0,
+        visualizacoes_completas: 0,
+        taxa_retencao: 0,
+        tempo_medio_visualizacao: 0,
+        taxa_for_you: 0,
+        cliques_link: 0,
+        clique_arroba: 0,
+        clique_hashtag: 0,
+        avancar: 0,
+        voltar: 0,
+        sair: 0,
+        proximo_story: 0,
+        visitas_perfil: 0,
+        comecaram_seguir: 0,
+        tempo_stories: 0,
+        curtidas: 0,
+        salvamentos: 0,
+        compartilhamentos: 0,
+        comentarios: 0,
         userId: '',
-        startDate: '',
-        endDate: '',
-        description: '',
         files: []
-    })
-    const [customerSelected, setCustomerSelected] = useState<CustomerDataObject>({
-        _id: '',
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        canal: '',
     })
     const router = useRouter()
     const { id } = router.query
@@ -78,42 +98,6 @@ const AnalyticsEdit: React.FC = () => {
         }
     }
 
-    // const handleImageProcessing = (file: File): Promise<File> => {
-    //     return new Promise((resolve) => {
-    //         const img = new Image();
-    //         img.onload = () => {
-    //             const canvas = document.createElement('canvas');
-    //             const ctx = canvas.getContext('2d');
-
-    //             // Ajustar o tamanho do canvas
-    //             canvas.width = img.width;
-    //             canvas.height = img.height;
-
-    //             if (!ctx) return
-    //             // Desenhar a imagem no canvas
-    //             ctx.drawImage(img, 0, 0);
-
-    //             // Converter para escala de cinza
-    //             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    //             const data = imageData.data;
-
-
-    //             for (let i = 0; i < data.length; i += 4) {
-    //                 const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-    //                 data[i] = data[i + 1] = data[i + 2] = avg; // R, G, B
-    //             }
-
-    //             ctx.putImageData(imageData, 0, 0);
-
-    //             // Salvar a imagem processada e retornar
-    //             canvas.toBlob((blob) => {
-    //                 const processedFile = new File([blob], file.name, { type: file.type });
-    //                 resolve(processedFile);
-    //             });
-    //         };
-    //         img.src = URL.createObjectURL(file);
-    //     });
-    // };
 
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -126,7 +110,7 @@ const AnalyticsEdit: React.FC = () => {
     const getAnalytics = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`/api/analytics/get?analyticsId=${id}`, {
+            const response = await fetch(`/api/analytics/get?filesAnalyticId=${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,7 +130,7 @@ const AnalyticsEdit: React.FC = () => {
             const data = await response.json();
 
             if (data.success) {
-                setAnalyticsData(data.analytics);
+                setAnalyticsData(data.filesData);
             }
 
         } catch (error) {
@@ -161,64 +145,6 @@ const AnalyticsEdit: React.FC = () => {
             getAnalytics()
         }
     }, [id])
-
-    const handleCreate = async () => {
-        setLoading(true)
-        try {
-            const response = await fetch('/api/analytics/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ analyticsData, userId: userData._id } as Record<string, unknown>)
-            });
-
-            if (!response.ok) {
-                setAlertData({
-                    active: true,
-                    title: 'Ocorreu um erro.',
-                    message: 'Erro ao criar a Análise',
-                    type: 'error'
-                })
-                return
-            }
-
-            const data = await response.json();
-
-            if (data.analyticsId && newFiles.length > 0) {
-                let success = true
-                for (let file of newFiles) {
-                    const uploadFiles = await handleFileUpload(file, data.analyticsId)
-                    if (!uploadFiles) success = false
-                }
-
-                if (success) {
-
-                    setAlertData({
-                        active: true,
-                        title: 'Tudo Certo!',
-                        message: 'Análise cadastrada com sucesso!',
-                        type: 'success'
-                    })
-                } else {
-                    setAlertData({
-                        active: true,
-                        title: 'Ocorreu um erro ao subir arquivos.',
-                        message: 'Erro ao fazer upload dos arquivos na Análise',
-                        type: 'error'
-                    })
-                }
-            }
-
-            // router.push(`/analytics/${data.analyticsId}`);
-            return
-        } catch (error) {
-            console.error('Erro ao verificar a Análise:', error);
-            return error
-        } finally {
-            setLoading(false)
-        }
-    }
 
     const handleUpdate = async () => {
         setLoading(true)
@@ -265,7 +191,7 @@ const AnalyticsEdit: React.FC = () => {
     const handleDelete = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`/api/analytics/delete?analyticsId=${id}`, {
+            const response = await fetch(`/api/analytics/delete?filesAnalyticId=${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -298,45 +224,137 @@ const AnalyticsEdit: React.FC = () => {
 
         } catch (error) {
             console.log(error)
-        } finally{
+        } finally {
             setLoading(false)
         }
     }
 
+
+    const plataform = [
+        { label: "Youtube", value: "Youtube" },
+        { label: "Instagram", value: "Instagram" },
+        { label: "Tiktok", value: "Tiktok" },
+    ];
+
+    const format = [
+        { label: "Reels", value: "Reels" },
+        { label: "Stories", value: "Stories" },
+        { label: "Post", value: "Post" },
+    ];
+
+    const verifyLogoPlataform = (plataform: string): string => {
+        if (plataform === 'Youtube') return '/icons/youtube_icon.png'
+        if (plataform === 'Instagram') return '/icons/instagram_icon.png'
+        if (plataform === 'Tiktok') return '/icons/tiktok_icon.png'
+
+        return ''
+    }
+
     return (
-        <>
-            <SectionHeader title='Editar Análise' />
+        <Body>
+            <SectionHeader title='Minha Análise' />
 
 
             <div className="bg-white rounded py-5 px-6">
                 <h1 className="text-gray-900 text-2xl font-bold pb-8">Resumo</h1>
 
-                <div className="flex w-full pb-10 gap-6">
-                    <div className="flex gap-1 flex-col pr-5">
-                        <span className="text-gray-700">Contas alcançadas:</span>
-                        <span className="text-gray-700 font-bold">380</span>
-                    </div>
-
-                    <div className="flex gap-1 flex-col pr-5">
-                        <span className="text-gray-700">Contas com engajamento:</span>
-                        <span className="text-gray-700 font-bold">46</span>
-                    </div>
-
-                    <div className="flex gap-1 flex-col pr-5">
-                        <span className="text-gray-700">Atividade do perfil:</span>
-                        <span className="text-gray-700 font-bold">2</span>
+                <div className="flex w-full pb-5 gap-6 flex-wrap">
+                    <div className="flex gap-2 py-3 px-3 items-center">
+                        <span className="fw-bold text-gray-900 text-2xl">{analyticsData.format}</span>
+                        <img src={verifyLogoPlataform(analyticsData.plataform)}
+                            className="w-auto h-8" />
                     </div>
                 </div>
-
-                <div className="flex w-full gap-6">
-                    <div className="flex gap-1 flex-col pr-5">
-                        <span className="text-gray-700">Tipos de Contas Análisadas:</span>
-                        <span className="text-gray-700 font-bold">3</span>
+                <div className="flex w-full pb-10 gap-6 flex-wrap">
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Impressões:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.impressoes || 0}</span>
                     </div>
 
-                    <div className="flex gap-1 flex-col pr-5">
-                        <span className="text-gray-700">Prints análisados:</span>
-                        <span className="text-gray-700 font-bold">10</span>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Visualizações:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.visualizacoes || 0}</span>
+                    </div>
+
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Alcance:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.alcance || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Seguidores Alcançados:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.seguidores_alcancados || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Não Seguidores:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.nao_seguidores_integram || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Taxa de Retenção:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.taxa_retencao || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">tempo médio de viualização (s):</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.tempo_medio_visualizacao || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Taxa for you:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.taxa_for_you || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Cliques no Link:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.cliques_link || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Cliques no @:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.clique_arroba || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Cliques no hashtag:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.clique_hashtag || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Avançar:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.avancar || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Voltar:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.voltar || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Sair:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.sair || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Próximo Story:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.proximo_story || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Visitas ao Perfil:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.visitas_perfil || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Começaram a seguir:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.comecaram_seguir || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Tempo de Stories:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.tempo_stories || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Curtidas:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.curtidas || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Salvamentos:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.salvamentos || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Compartilhamentos:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.compartilhamentos || 0}</span>
+                    </div>
+                    <div className="flex gap-2 rounded-md bg-gray-200 py-3 px-3">
+                        <span className="text-gray-700">Comentários:</span>
+                        <span className="text-gray-700 font-bold">{analyticsData.comentarios || 0}</span>
                     </div>
                 </div>
 
@@ -355,23 +373,14 @@ const AnalyticsEdit: React.FC = () => {
                         </svg>
                         Enviar por email
                     </button>}
-
-                    <Button arrowIcon={!loading} isLoading={loading} text="Salvar" onClick={() => newAnalytics ? handleCreate() : handleUpdate()} />
-
-                    {!newAnalytics && <button
-                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-4 py-2 text-center"
-                        onClick={() => handleDelete()}
-                    >
-                        Excluir
-                    </button>}
                 </div>
             </div>
 
             <div className="bg-white rounded py-5 px-6">
-                <h1 className="text-gray-900 text-2xl font-bold pb-8">Dados da Análise (opicional)</h1>
+                <h1 className="text-gray-900 text-2xl font-bold pb-8">Dados da Ação/Campanha</h1>
                 <div className="grid gap-3">
 
-                    <div className="w-full mb-2 relative">
+                    {/* <div className="w-full mb-2 relative">
                         <label className="mb-2 text-sm font-medium text-gray-900 sr-only ">Buscar</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -395,15 +404,15 @@ const AnalyticsEdit: React.FC = () => {
                                 </div>
                             ))}
                         </div>}
-                    </div>
+                    </div> */}
 
                     <div>
                         <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900">
-                            Cliente
+                            Influêncer
                         </label>
                         <input
                             type="text"
-                            value={customerSelected?.name || ''}
+                            value={analyticsData?.influencer || ''}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="Busque pelo cliente no campo acima..."
                         />
@@ -411,12 +420,34 @@ const AnalyticsEdit: React.FC = () => {
 
                     <div>
                         <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900">
-                            Nome
+                            Plataforma
+                        </label>
+                        <Dropdown
+                            title="Selecione uma opção"
+                            options={plataform}
+                            value={analyticsData.plataform}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="format" className="block mb-2 text-sm font-medium text-gray-900">
+                            Formato
+                        </label>
+                        <Dropdown
+                            title="Selecione uma opção"
+                            options={format}
+                            value={analyticsData.format}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900">
+                            Campanha
                         </label>
                         <input
                             type="text"
                             name="name"
-                            value={analyticsData.name || ''}
+                            value={analyticsData.campaign || ''}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             placeholder="ex: nome do Projeto"
                             onChange={handleChange}
@@ -426,7 +457,7 @@ const AnalyticsEdit: React.FC = () => {
                     <div className="flex gap-2 w-full">
                         <div>
                             <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900">
-                                Começo:
+                                Data de envio:
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -436,8 +467,8 @@ const AnalyticsEdit: React.FC = () => {
                                 </div>
                                 <input
                                     type="date"
-                                    name="startDate"
-                                    value={analyticsData.startDate || ''}
+                                    name="createdAt"
+                                    value={analyticsData.createdAt || ''}
                                     className="px-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5"
                                     placeholder="Select date start"
                                     onChange={handleChange}
@@ -447,7 +478,7 @@ const AnalyticsEdit: React.FC = () => {
 
                         <div>
                             <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900">
-                                Fim:
+                                Data da última atualização:
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -458,7 +489,7 @@ const AnalyticsEdit: React.FC = () => {
                                 <input
                                     type="date"
                                     name="endDate"
-                                    value={analyticsData.endDate || ''}
+                                    value={analyticsData.updatedAt || ''}
                                     className="px-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5"
                                     placeholder="Select date start"
                                     onChange={handleChange}
@@ -466,87 +497,34 @@ const AnalyticsEdit: React.FC = () => {
                             </div>
                         </div>
                     </div>
-
-                    <div className="w-full flex flex-col">
-                        <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900 ">
-                            Descrição
-                        </label>
-                        <textarea
-                            name="description"
-                            value={analyticsData.description || ''}
-                            onChange={(e) => setAnalyticsData({ ...analyticsData, description: e.target.value })}
-                            rows={4}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            placeholder="Escreva os detalhes da análise...">
-                        </textarea>
-                    </div>
                 </div>
             </div>
 
             <div className="bg-white rounded py-5 px-6">
-                <h1 className="text-gray-900 text-2xl font-bold pb-8">Prints</h1>
-
-                {/* <div className="d-flex px-2 py-2">
-                    <DropzoneData onFileUpload={async (file) => {
-                        const filePreview = URL.createObjectURL(file);
-                        const analyticsId = Array.isArray(id) ? id[0] : id || '';
-                        // const processedFile = await handleImageProcessing(file);
-                        if (newAnalytics) {
-                            handleAddFile(file)
-                        } else {
-                            handleFileUpload({ file, preview: filePreview }, analyticsId)
-                        }
-                    }
-                    } />
-                </div> */}
+                <h1 className="text-gray-900 text-2xl font-bold pb-8">Arquivos</h1>
 
                 <div className="d-flex flex-column gap-2">
-                    <h5 className="text-gray-900 text-1xl font-bold pb-2 pt-8">Todos os prints: </h5>
+                    <div className="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 pl-6 max-w-[72%]">
+                        {analyticsData.files.map((fileData, index) => (
+                            <Link key={index} href={fileData.url || ''} target="_blank">
+                                <div className={`border rounded-md flex px-2 py-2 flex-col bg-white items-center gap-4`}>
 
-                    <Table>
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                            <tr>
-                                <th scope="col" className="px-6 py-3">Imagem</th>
-                                <th scope="col" className="px-6 py-3">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {newFiles.map((fileData, index) => (
-                                <tr key={index} className="bg-white border-b">
-                                    <td className="p-4">
-                                        <img
-                                            src={fileData.preview}
-                                            className="w-16 md:w-32 max-w-full max-h-36 object-cover"
-                                            alt={`Preview ${index}`}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 cursor-pointer">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-6 w-6 text-red-600 hover:text-red-500"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            strokeWidth={2}
-                                            onClick={() => {
-                                                setNewFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-                                                URL.revokeObjectURL(fileData.preview);
-                                            }}
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
+                                    <div className="w-full flex justify-between gap-2 align-center pb-4 px-2 py-2">
+                                        <span className="text-gray-600 text-sm max-w-80 truncate whitespace-nowrap">{fileData?.name}</span>
+                                    </div>
+
+                                    <img
+                                        src={fileData.url}
+                                        className="w-40 md:w-56  max-h-64 object-contain"
+                                        alt={`Preview ${index}`}
+                                    />
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </div>
-        </>
+        </Body>
     )
 
 }
