@@ -1,11 +1,12 @@
 import Dropzone from "@/components/dropzone/Dropzone"
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import FormDetailsFile from "./components/FormDetailsFile";
 import { api } from "@/helpers/api";
 import { useAppContext } from "@/context/AppContext";
 import Tesseract from 'tesseract.js';
 import { Button } from "@/components/button/Button";
 import { generateRandomId } from "@/helpers";
+import Footer from "./components/footer/Footer";
 
 
 export interface FileWithPreview {
@@ -29,6 +30,8 @@ const UploadFiles: React.FC = () => {
     const [showFormFiles, setShowFormFiles] = useState<boolean>(false)
     const [fileSelected, setFileSelected] = useState<string>();
     const [loadingData, setLoadingData] = useState<boolean>(false)
+    const [showNewFiles, setShowNewFiles] = useState<boolean>(false)
+    const filesDrop = useRef<HTMLDivElement>(null)
 
     const handleAddFile = (files: File[]) => {
         setLoadingData(true)
@@ -76,6 +79,7 @@ const UploadFiles: React.FC = () => {
             });
 
             setNewFiles(prevFiles => [...prevFiles, ...fileWithPreview]);
+            setShowNewFiles(false)
         } catch (error) {
             console.log(error)
         } finally {
@@ -233,8 +237,24 @@ const UploadFiles: React.FC = () => {
     }, []);
 
 
+    useEffect(() => {
+        const handleClickOutSide = (event: MouseEvent) => {
+            if ((filesDrop.current && !filesDrop.current.contains(event.target as Node))) {
+                setShowNewFiles(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutSide)
+
+        return () => {
+            document.addEventListener('mousedown', handleClickOutSide)
+        }
+
+    }, [])
+
+
     return (
-        <div className={`relative ${loadingData && 'opacity-25'}`}>
+        <div className={`relative`}>
             {loadingData &&
                 <div className="flex flex-col items-center justify-center h-screen">
                     {/* <!-- Texto de carregamento --> */}
@@ -280,7 +300,7 @@ const UploadFiles: React.FC = () => {
                         <Dropzone onFileUpload={(files) => handleAddFile(files)} />
                     </div>
                     :
-                    <div className="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 pl-6 max-w-[72%]">
+                    <div className={`grid grid-cols-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 pl-6 max-w-[72%] ${(loadingData || showNewFiles) && 'opacity-25'}`}>
                         {newFiles.map((fileData, index) => {
                             const showedDetails = fileData.fileId === fileSelected
                             return (
@@ -354,9 +374,8 @@ const UploadFiles: React.FC = () => {
 
             {(newFiles.length > 0 && showFormFiles && fileSelected) ? (
                 <FormDetailsFile
-                    handleUpload={handleFileUpload}
                     handleCancel={() => {
-                        setNewFiles([])
+                        setFileSelected('')
                         setShowFormFiles(false)
                     }}
                     fileSelected={newFiles.filter(item => item.fileId === fileSelected)[0]}
@@ -372,13 +391,41 @@ const UploadFiles: React.FC = () => {
                     }}
                 />
             ) : (
-                <div className="flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20">
+                <div className={`flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20 ${(loadingData || showNewFiles) && 'opacity-25'}`}>
                     <span className="fw-bold text-gray-800 text-lg pb-4">Especificações</span>
                     <li className="text-slate-600">Resolução</li>
                     <li className="text-slate-600">Prints estendidos</li>
                     <li className="text-slate-600">XPTO</li>
                 </div>
             )}
+
+            {newFiles.length > 0 &&
+                <div className="flex w-full justify-center items-center">
+                    <Footer
+                        handleUpload={handleFileUpload}
+                        handleCancel={() => {
+                            setNewFiles([])
+                            setShowFormFiles(false)
+                        }}
+                        setShowNewFiles={setShowNewFiles}
+                    />
+                </div>}
+
+            {showNewFiles &&
+                <div className="flex w-full absolute justify-center item-center top-20">
+                    <div className="flex w-full flex-col gap-6 justify-center item-center" ref={filesDrop}>
+                        <div className="flex w-full justify-center item-center">
+                            <h1 className="text-gray-700 font-light text-2xl text-center max-w-3xl">Agilize o processo e evite erros.
+                                <h1>
+                                    Faça uploads dos prints de resultados dos influenciadores.
+                                </h1>
+                            </h1>
+                        </div>
+
+                        <Dropzone onFileUpload={(files) => handleAddFile(files)} />
+                    </div>
+                </div>
+            }
 
         </div>
     )

@@ -7,7 +7,6 @@ import { FileWithPreview } from "..";
 
 
 interface FormsProps {
-    handleUpload: () => Promise<boolean>
     handleCancel: () => void
     fileSelected: FileWithPreview
     handleChange: (name: string, value: string) => void
@@ -15,7 +14,6 @@ interface FormsProps {
 
 
 const FormDetailsFile: React.FC<FormsProps> = ({
-    handleUpload,
     handleCancel,
     fileSelected,
     handleChange
@@ -161,8 +159,8 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                 </div>
 
                 <div className="flex w-full justify-end py-2 gap-2">
-                    <Button deleteButton text="Cancelar" isLoading={loading} onClick={handleCancel} />
-                    <Button text="Salvar Todos os Arquivos" isLoading={loading} arrowIcon onClick={handleUpload} />
+                    <Button secondary text="Fechar" isLoading={loading} onClick={handleCancel} />
+                    {/* <Button text="Salvar Todos os Arquivos" isLoading={loading} arrowIcon onClick={handleUpload} /> */}
                 </div>
 
             </div>
