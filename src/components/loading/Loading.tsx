@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Loading: React.FC = () => {
     return (
-        <div className='w-full h-full flex align-center justify-content'>
+        <div className='w-full h-screen flex align-center justify-content'>
             <div className="text-left rtl:text-right">
                 <div role="status">
                     <svg

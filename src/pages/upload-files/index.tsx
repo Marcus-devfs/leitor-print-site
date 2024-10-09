@@ -1,12 +1,12 @@
 import Dropzone from "@/components/dropzone/Dropzone"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import FormDetailsFile from "./components/FormDetailsFile";
-import { api } from "@/helpers/api";
 import { useAppContext } from "@/context/AppContext";
 import Tesseract from 'tesseract.js';
-import { Button } from "@/components/button/Button";
 import { generateRandomId } from "@/helpers";
 import Footer from "./components/footer/Footer";
+import axios, { AxiosProgressEvent, AxiosResponse } from 'axios';
+
 
 
 export interface FileWithPreview {
@@ -22,6 +22,21 @@ export interface FileWithPreview {
     campaign: string
     followersNumber: string
     marca_cliente: string
+    groupKey: string
+    groupKeyColor: string
+}
+
+interface ApiResponse {
+    success: boolean;
+}
+
+interface UploadProgress {
+    [key: string]: number;
+}
+
+interface ProgressUpload {
+    message: string
+    progress: number
 }
 
 const UploadFiles: React.FC = () => {
@@ -31,7 +46,26 @@ const UploadFiles: React.FC = () => {
     const [fileSelected, setFileSelected] = useState<string>();
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showNewFiles, setShowNewFiles] = useState<boolean>(false)
+    const [showGroupFiles, setShowGroupFiles] = useState<boolean>(false)
+    const [uploadProgress, setUploadProgress] = useState<UploadProgress>({});
+    const [messageProgress, setMessageProgress] = useState<ProgressUpload>({ message: 'Carregando...', progress: 0 });
     const filesDrop = useRef<HTMLDivElement>(null)
+
+
+    useEffect(() => {
+        const handleClickOutSide = (event: MouseEvent) => {
+            if ((filesDrop.current && !filesDrop.current.contains(event.target as Node))) {
+                setShowNewFiles(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutSide)
+
+        return () => {
+            document.addEventListener('mousedown', handleClickOutSide)
+        }
+
+    }, [])
 
     const handleAddFile = (files: File[]) => {
         setLoadingData(true)
@@ -48,7 +82,9 @@ const UploadFiles: React.FC = () => {
                 plataform: '',
                 format: '',
                 type: '',
-                marca_cliente: ''
+                marca_cliente: '',
+                groupKey: '',
+                groupKeyColor: ''
             }))
 
             fileWithPreview.forEach(async (fileData: any, index) => {
@@ -121,7 +157,7 @@ const UploadFiles: React.FC = () => {
             Formato: null,
         };
 
-        // Implementar a lógica similar ao código Python
+        // Validação dos dados de acordo com texto extraído
         if (result.includes('insights') && result.includes('do') && result.includes('reel') || result.includes('interacoes') && result.includes('do') && result.includes('reel')) {
             extractedInfo.Plataforma = 'Instagram';
             extractedInfo.Formato = 'Reels';
@@ -158,27 +194,18 @@ const UploadFiles: React.FC = () => {
             extractedInfo.Formato = 'Vídeo';
         }
 
-        // Exemplo de extração de dados
-        if (result.includes('alcance')) {
-            const index = result.indexOf('alcance');
-            if (isValidNumber(result[index + 1])) {
-                extractedInfo.Alcance = result[index + 1].replace(/[.,]/g, '');
-            }
-        }
-
-        // Continuar implementando a lógica para extrair outras informações
-
         return extractedInfo;
     };
 
 
 
     const handleFileUpload = async () => {
-        setLoading(true)
+        setLoadingData(true)
+        setUploadProgress({});
+
         try {
             let ok = true
             if (newFiles.length > 0) {
-
                 for (let file of newFiles) {
 
                     let query = `?userId=${userData._id}`
@@ -188,11 +215,37 @@ const UploadFiles: React.FC = () => {
                     if (file.influencer) query += `&influencer=${file.influencer}`
                     if (file.plataform) query += `&plataform=${file.plataform}`
                     if (file.type) query += `&type=${file.type}`
+                    if (file.groupKey) query += `&groupKey=${file.groupKey}`
+
 
                     const fileData = file.file
+                    const fileName = encodeURIComponent(fileData?.name)
                     const formData = new FormData()
-                    formData?.append('file', fileData, encodeURIComponent(fileData?.name))
-                    const response = await api.post(`/file/upload${query}`, formData);
+                    formData?.append('file', fileData, fileName)
+
+                    const response: AxiosResponse<ApiResponse> = await axios.post(
+                        `${process.env.NEXT_PUBLIC_API_URL}/file/upload${query}`,
+                        formData, {
+                        onUploadProgress: (event: AxiosProgressEvent) => {
+                            if (event.total) {
+                                let progress: number = Math.round(
+                                    (event.loaded * 100) / event.total
+                                );
+
+                                setMessageProgress({
+                                    message: `Carregando arquivo ${fileName} ${progress}% ... `,
+                                    progress
+                                })
+
+                                console.log(
+                                    `A imagem ${fileName} está ${progress}% carregada... `
+                                );
+                            } else {
+                                console.log(event)
+                            }
+                        },
+                    }
+                    );
                     const { success } = response.data
                     if (!success) ok = false
                 }
@@ -223,7 +276,7 @@ const UploadFiles: React.FC = () => {
             console.error('Erro no upload:', error);
             return false
         } finally {
-            setLoading(false)
+            setLoadingData(false)
         }
     };
 
@@ -236,35 +289,72 @@ const UploadFiles: React.FC = () => {
         });
     }, []);
 
+    const getRandomColor = () => {
+        const randomColor = Math.floor(Math.random() * 16777215).toString(16).toUpperCase();
+        return `#${randomColor.padStart(6, '0')}`; // Garante que a cor tenha sempre 6 caracteres
+    };
 
-    useEffect(() => {
-        const handleClickOutSide = (event: MouseEvent) => {
-            if ((filesDrop.current && !filesDrop.current.contains(event.target as Node))) {
-                setShowNewFiles(false);
+    const handleGroupFiles = () => {
+        try {
+            setLoading(true)
+
+            const selectedFiles = newFiles.filter(file => file.selected);
+            if (selectedFiles.length > 1) {
+                const groupKey = generateRandomId();
+                const groupKeyColor = getRandomColor();
+
+                const updatedFiles = newFiles.map(file => {
+                    if (file.selected) {
+                        return { ...file, groupKey, groupKeyColor, selected: false };
+                    }
+                    return file;
+                });
+                setNewFiles(updatedFiles);
+                setShowGroupFiles(false)
+            } else {
+                setAlertData({
+                    active: true,
+                    title: 'Atenção!',
+                    message: 'Selecione pelo menos dois arquivos para agrupar.',
+                    type: 'alert'
+                })
             }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
         }
+    };
 
-        document.addEventListener('mousedown', handleClickOutSide)
 
-        return () => {
-            document.addEventListener('mousedown', handleClickOutSide)
-        }
+    const handleRemoveFromGroup = (fileId: string) => {
+        setNewFiles(prevFiles =>
+            prevFiles.map(file =>
+                file.fileId === fileId ? { ...file, groupKey: '', groupKeyColor: '' } : file
+            )
+        );
+    };
 
-    }, [])
 
 
     return (
         <div className={`relative`}>
-            {loadingData &&
-                <div className="flex flex-col items-center justify-center h-screen">
+            {loadingData && messageProgress && ( // Mostra apenas se estiver carregando e se houver um arquivo atual
+                <div className="absolute w-full flex flex-col items-center justify-center h-screen">
                     {/* <!-- Texto de carregamento --> */}
-                    <div className="text-lg font-semibold text-gray-700 mb-4">
-                        Carregando arquivos...
+                    <div className="text-lg font-semibold text-gray-700 mb-4 justify-center text-center">
+                        Carregando...
+                        <div className="text-sm text-gray-700 mb-1 justify-center text-center">
+                            {messageProgress.message}
+                        </div>
                     </div>
 
                     {/* <!-- Animação de barra de progresso --> */}
                     <div className="relative w-64 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 animate-loading"></div>
+                        <div
+                            className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
+                            style={{ width: `${messageProgress.progress || 0}%` }} // Atualiza a largura da barra.
+                        ></div>
                     </div>
 
                     {/* <!-- Rodapé com um ícone de upload --> */}
@@ -277,16 +367,17 @@ const UploadFiles: React.FC = () => {
                             stroke="currentColor"
                         >
                             <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
                                 d="M12 4v16m8-8H4"
                             />
                         </svg>
                         <span className="ml-2 text-blue-600">Carregando...</span>
                     </div>
                 </div>
-            }
+            )}
+
             <div>
                 {newFiles.length === 0 ?
                     <div className="flex w-full h-full flex-col gap-6">
@@ -304,18 +395,61 @@ const UploadFiles: React.FC = () => {
                         {newFiles.map((fileData, index) => {
                             const showedDetails = fileData.fileId === fileSelected
                             return (
-                                <div key={index} className={`border-b relative flex px-2 py-2 flex-col ${fileData.selected ? "bg-[#FFE5B5]" : "bg-white"
-                                    } items-center gap-4 ${showedDetails && 'border-2 border-[#FFE5B5]'} cursor-pointer`}
+                                <div key={index}
+                                    className={`border-b relative flex px-2 py-2 flex-col items-center gap-4 ${showedDetails && 'border-2 border-[#FFE5B5]'} cursor-pointer`}
+                                    style={{ backgroundColor: fileData.selected ? "#FFE5B5" : fileData.groupKeyColor ? fileData.groupKeyColor + '55' : "#fff" }}
                                     onClick={(e) => {
-                                        if (fileData.fileId !== fileSelected) {
-                                            setFileSelected(fileData.fileId)
-                                            setShowFormFiles(true)
+                                        if (!showGroupFiles) {
+                                            if (fileData.fileId !== fileSelected) {
+                                                setFileSelected(fileData.fileId)
+                                                setShowFormFiles(true)
 
-                                        } else {
-                                            setFileSelected('')
-                                            setShowFormFiles(false)
+                                            } else {
+                                                setFileSelected('')
+                                                setShowFormFiles(false)
+                                            }
                                         }
                                     }}>
+
+                                    <div className="absolute top-2 right-2 flex items-center gap-2">
+                                        {fileData.groupKey && (
+                                            <button
+                                                className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    handleRemoveFromGroup(fileData.fileId)
+                                                }}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="h-4 w-4 mr-1">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                                Remover do grupo
+                                            </button>
+                                        )}
+
+                                        {!showGroupFiles && <button
+                                            className="flex items-center"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setShowFormFiles(false)
+                                                setNewFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+                                                URL.revokeObjectURL(fileData.preview);
+                                            }}>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-5 w-5 bg-red-600 text-white rounded-full px-1 py-1 hover:bg-red-400"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={2}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        </button>}
+                                    </div>
 
                                     {showedDetails &&
                                         <div className="absolute top-[-30px] left-[-5px] px-2 py-2 bg-primary rounded-md flex items-center justify-center">
@@ -324,7 +458,7 @@ const UploadFiles: React.FC = () => {
 
                                     <div className="cursor-pointer w-full flex justify-between gap-2 align-center pb-4 px-2 py-2">
 
-                                        {/* <div className="flex items-center h-5">
+                                        {showGroupFiles && <div className="flex items-center h-5">
                                             <input
                                                 id={`file-checkbox-${index}`}
                                                 type="checkbox"
@@ -334,29 +468,9 @@ const UploadFiles: React.FC = () => {
                                                 }}
                                                 className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300"
                                             />
-                                        </div> */}
+                                        </div>}
 
                                         <span className="text-gray-600 text-sm max-w-36 truncate whitespace-nowrap">{fileData?.file?.name}</span>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 bg-red-600 text-white rounded-full px-1 py-1 hover:bg-red-400"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            strokeWidth={2}
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                setShowFormFiles(false)
-                                                setNewFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-                                                URL.revokeObjectURL(fileData.preview);
-                                            }}
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
                                     </div>
 
                                     <img
@@ -408,6 +522,9 @@ const UploadFiles: React.FC = () => {
                             setShowFormFiles(false)
                         }}
                         setShowNewFiles={setShowNewFiles}
+                        setShowGroupFiles={setShowGroupFiles}
+                        showGroupFiles={showGroupFiles}
+                        handleGroupFiles={handleGroupFiles}
                     />
                 </div>}
 
