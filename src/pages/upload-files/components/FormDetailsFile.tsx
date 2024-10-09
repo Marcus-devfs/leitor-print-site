@@ -1,7 +1,7 @@
 import { Dropdown } from "@/components";
 import { Button } from "@/components/button/Button";
 import { useAppContext } from "@/context/AppContext";
-import React, { ChangeEvent, HtmlHTMLAttributes, SetStateAction, useState } from "react";
+import React from "react";
 import { FileWithPreview } from "..";
 
 
@@ -18,7 +18,7 @@ const FormDetailsFile: React.FC<FormsProps> = ({
     fileSelected,
     handleChange
 }) => {
-    const { setLoading, loading } = useAppContext()
+    const { loading } = useAppContext()
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         handleChange(e.target.name, e.target.value)
@@ -43,9 +43,6 @@ const FormDetailsFile: React.FC<FormsProps> = ({
         { label: "Ofertas", value: "Ofertas" },
         { label: "Divulgação de produtos", value: "Divulgação de produtos" },
     ];
-
-
-    console.log(fileSelected?.extractedText)
 
 
     return (
@@ -160,7 +157,6 @@ const FormDetailsFile: React.FC<FormsProps> = ({
 
                 <div className="flex w-full justify-end py-2 gap-2">
                     <Button secondary text="Fechar" isLoading={loading} onClick={handleCancel} />
-                    {/* <Button text="Salvar Todos os Arquivos" isLoading={loading} arrowIcon onClick={handleUpload} /> */}
                 </div>
 
             </div>

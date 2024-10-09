@@ -319,7 +319,7 @@ const UploadFiles: React.FC = () => {
 
                                     {showedDetails &&
                                         <div className="absolute top-[-30px] left-[-5px] px-2 py-2 bg-primary rounded-md flex items-center justify-center">
-                                            <span className="text-xs">Selecionado</span>
+                                            <span className="text-xs text-white">Selecionado</span>
                                         </div>}
 
                                     <div className="cursor-pointer w-full flex justify-between gap-2 align-center pb-4 px-2 py-2">
