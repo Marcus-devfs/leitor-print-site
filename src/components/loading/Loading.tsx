@@ -4,9 +4,9 @@ export const Loading: React.FC = () => {
     return (
         <div className="absolute w-full flex flex-col items-center justify-center h-screen -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">
             {/* <!-- Texto de carregamento --> */}
-            <div className="text-lg font-semibold text-gray-700 mb-4 justify-center text-center">
+            {/* <div className="text-lg font-semibold text-gray-700 mb-4 justify-center text-center">
                 Carregando...
-            </div>
+            </div> */}
 
             {/* <!-- Rodapé com um ícone de upload --> */}
             <div className="mt-4 flex items-center">
