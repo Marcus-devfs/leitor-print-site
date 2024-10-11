@@ -20,9 +20,11 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
 
     useEffect(() => {
         setIsClient(true); // Atualiza o estado para verdadeiro após a primeira renderização
+        if(isAuthenticated){
+            router.push('/')
+        }
     }, []);
 
-    // if (loading) return <Loading />;
     if (!isClient) return null; // Retorna null até que o cliente seja verificado
 
     const isAuthenticationPage = router.asPath === '/authentication';
