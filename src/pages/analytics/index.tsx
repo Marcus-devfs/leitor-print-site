@@ -1,17 +1,18 @@
 import { Body, SectionHeader } from "@/components"
 import { Table, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
-import {FilesAnalyticsObjectData } from "@/helpers/types"
+import { FilesAnalyticsObjectData } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
 const Budget: React.FC = () => {
     const [analytics, setAnalytics] = useState<FilesAnalyticsObjectData[]>([])
-    const { setAlertData } = useAppContext()
+    const { setAlertData, setLoading } = useAppContext()
     const router = useRouter()
 
 
     const getAnalytics = async () => {
+        setLoading(true)
         try {
             const response = await fetch(`/api/analytics/list`, {
                 method: 'GET',
@@ -33,12 +34,13 @@ const Budget: React.FC = () => {
             const data = await response.json();
 
             if (data.success) {
-                console.log(data.filesData)
                 setAnalytics(data.filesData);
             }
 
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -53,6 +55,16 @@ const Budget: React.FC = () => {
             <div className="flex w-full h-full flex-col">
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
                     <TableSearchInput placeholder="Buscar por Influêncer ou Campanha" />
+
+                    <div className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:text-primary transition duration-150 ease-in-out hover:scale-105 hover:shadow-md rounded-lg">
+                        <span className="text-gray-700 text-light text-sm">Exportar em Excel</span>
+                        <img
+                            src="./icons/excel.png"
+                            className="h-6 w-6"
+                            alt="excel-logo"
+                        />
+                    </div>
+
                 </div>
                 {analytics && analytics?.length > 0 ?
                     <Table>

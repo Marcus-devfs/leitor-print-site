@@ -66,7 +66,6 @@ export const Navbar: React.FC<NavbarProps> = ({ menu }) => {
                     <ul className="font-medium flex gap-2 ml-32">
                         {menu.map((menuItem) => {
                             const isPermission = userData ? menuItem.permissions.some(i => userData.permissions.includes(i)) : true
-                            console.log(isPermission)
                             if (isPermission) {
                                 return (
                                     <li key={menuItem.id}>
