@@ -306,7 +306,7 @@ const UploadFiles: React.FC = () => {
         setLoadingData(true)
         setUploadProgress({});
 
-        let textDataIds = []
+        let textDataIds: string[] = []
 
         try {
             let ok = true
@@ -355,7 +355,10 @@ const UploadFiles: React.FC = () => {
                     if (!data?.success) ok = false
 
                     if (data?.textDataId) {
-                        textDataIds.push(data?.textDataId)
+                        const textId = data?.textDataId
+                        if (!textDataIds.includes(textId)) {
+                            textDataIds.push(textId)
+                        }
                     }
                 }
 
