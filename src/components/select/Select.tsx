@@ -10,6 +10,7 @@ interface DropdownProps {
     options: Option[]; // Atualizado para receber um array de objetos com label e value
     onSelect?: (value: string) => void;
     value: string | null;
+    disabled?: boolean
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -17,6 +18,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
     onSelect,
     value = null,
     options = [],
+    disabled = false
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -39,6 +41,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             <div>
                 <button
                     type="button"
+                    disabled={disabled}
                     onClick={handleToggle}
                     className="flex items-center justify-between w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     aria-haspopup="true"

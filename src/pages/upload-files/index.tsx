@@ -49,6 +49,7 @@ const UploadFiles: React.FC = () => {
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showNewFiles, setShowNewFiles] = useState<boolean>(false)
     const [showGroupFiles, setShowGroupFiles] = useState<boolean>(false)
+    const [showCheckboxFile, setShowCheckboxFile] = useState<boolean>(false)
     const [uploadProgress, setUploadProgress] = useState<UploadProgress>({});
     const [messageProgress, setMessageProgress] = useState<ProgressUpload>({ message: 'Carregando...', progress: 0 });
     const filesDrop = useRef<HTMLDivElement>(null)
@@ -68,6 +69,18 @@ const UploadFiles: React.FC = () => {
         }
 
     }, [])
+
+    useEffect(() => {
+        if (!showCheckboxFile) {
+            const updatedFiles = newFiles.map(file => {
+                if (file.selected) {
+                    return { ...file, selected: false };
+                }
+                return file;
+            });
+            setNewFiles(updatedFiles);
+        }
+    }, [showCheckboxFile])
 
     const handleProcessFiles = async (fileWithPreview: FileWithPreview[]) => {
         let isHavePrintCortado = false;
@@ -248,10 +261,52 @@ const UploadFiles: React.FC = () => {
     };
 
 
+    const handleSendPlanilhaEmail = async (textDataIds: any) => {
+        try {
+            const response: AxiosResponse<any> = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/filesData/send-planilha-email`,
+                { textDataIds }, {
+                onUploadProgress: (event: AxiosProgressEvent) => {
+                    if (event.total) {
+                        let progress: number = Math.round(
+                            (event.loaded * 100) / event.total
+                        );
+
+                        setMessageProgress({
+                            message: `Enviando Planilha por e-mail ${progress}% ... `,
+                            progress
+                        })
+
+                        console.log(
+                            `está ${progress}% carregada... `
+                        );
+
+                        console.log(`event.loaded `, event.loaded);
+                        console.log(`event.total `, event.total);
+                    } else {
+                        console.log(event)
+                    }
+                },
+            })
+
+            const { data } = response
+            if (!data?.success) {
+                return false
+            }
+
+            return true
+
+        } catch (error) {
+            console.log(error)
+            return error
+        }
+    }
 
     const handleFileUpload = async () => {
         setLoadingData(true)
         setUploadProgress({});
+
+        let textDataIds = []
 
         try {
             let ok = true
@@ -273,7 +328,7 @@ const UploadFiles: React.FC = () => {
                     const formData = new FormData()
                     formData?.append('file', fileData, fileName)
 
-                    const response: AxiosResponse<ApiResponse> = await axios.post(
+                    const response: AxiosResponse<any> = await axios.post(
                         `${process.env.NEXT_PUBLIC_API_URL}/file/upload${query}`,
                         formData, {
                         onUploadProgress: (event: AxiosProgressEvent) => {
@@ -296,14 +351,20 @@ const UploadFiles: React.FC = () => {
                         },
                     }
                     );
-                    const { success } = response.data
-                    if (!success) ok = false
+                    const { data } = response
+                    if (!data?.success) ok = false
+
+                    if (data?.textDataId) {
+                        textDataIds.push(data?.textDataId)
+                    }
                 }
 
-                if (ok) {
+                const sendEmail = await handleSendPlanilhaEmail(textDataIds)
+
+                if (ok && sendEmail) {
                     setAlertData({
                         active: true,
-                        title: 'Arquivos enviados para processamento!',
+                        title: 'Arquivos enviados e processados!',
                         message: 'Os arquivos foram enviados, e estão sendo processados. Assim que for finalizado, você será avisado por e-mail.',
                         type: 'success'
                     })
@@ -444,7 +505,7 @@ const UploadFiles: React.FC = () => {
                     ) : (
                         <>
                             {newFiles?.filter(item => item?.print_cortado)?.length &&
-                                <div className="pl-6 flex w-full pb-2">
+                                <div className="pl-6 flex w-full pb-8">
                                     <div className="px-2 py-1 bg-primary rounded-md flex items-center justify-center">
                                         <span className="text-xs text-white">Você possúi arquivos que podem ser prints cortados. Não esqueça de agrupa-los.</span>
                                     </div>
@@ -457,7 +518,7 @@ const UploadFiles: React.FC = () => {
                                             className={`border-b relative flex px-2 py-2 flex-col items-center gap-2 ${showedDetails && 'border-2 border-[#FFE5B5]'} cursor-pointer`}
                                             style={{ backgroundColor: fileData.selected ? "#FFE5B5" : fileData.groupKeyColor ? fileData.groupKeyColor + '55' : "#fff" }}
                                             onClick={(e) => {
-                                                if (!showGroupFiles) {
+                                                if (!showGroupFiles && !showCheckboxFile) {
                                                     if (fileData.fileId !== fileSelected) {
                                                         setFileSelected(fileData.fileId)
                                                         setShowFormFiles(true)
@@ -484,29 +545,30 @@ const UploadFiles: React.FC = () => {
                                                     </button>
                                                 )}
 
-                                                {!showGroupFiles && <button
-                                                    className="flex items-center"
-                                                    onClick={(e) => {
-                                                        e.preventDefault()
-                                                        setShowFormFiles(false)
-                                                        setNewFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-                                                        URL.revokeObjectURL(fileData.preview);
-                                                    }}>
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-5 w-5 bg-red-600 text-white rounded-full px-1 py-1 hover:bg-red-400"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                        strokeWidth={2}
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            d="M6 18L18 6M6 6l12 12"
-                                                        />
-                                                    </svg>
-                                                </button>}
+                                                {(!showGroupFiles && !showCheckboxFile) &&
+                                                    <button
+                                                        className="flex items-center"
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            setShowFormFiles(false)
+                                                            setNewFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+                                                            URL.revokeObjectURL(fileData.preview);
+                                                        }}>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-5 w-5 bg-red-600 text-white rounded-full px-1 py-1 hover:bg-red-400"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor"
+                                                            strokeWidth={2}
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M6 18L18 6M6 6l12 12"
+                                                            />
+                                                        </svg>
+                                                    </button>}
                                             </div>
 
                                             {showedDetails &&
@@ -516,7 +578,7 @@ const UploadFiles: React.FC = () => {
 
                                             <div className="cursor-pointer w-full flex justify-between gap-2 align-center pb-4 px-2 py-2">
 
-                                                {showGroupFiles && <div className="flex items-center h-5">
+                                                {(showCheckboxFile || showGroupFiles) && <div className="flex items-center h-5">
                                                     <input
                                                         id={`file-checkbox-${index}`}
                                                         type="checkbox"
@@ -554,22 +616,34 @@ const UploadFiles: React.FC = () => {
                 }
             </div>
 
-            {(newFiles.length > 0 && showFormFiles && fileSelected) ? (
+            {(newFiles.length > 0 && showFormFiles && (fileSelected || showCheckboxFile || newFiles.filter(item => item.selected).length > 0)) ? (
                 <FormDetailsFile
+                    showCheckboxFile={showCheckboxFile}
                     handleCancel={() => {
                         setFileSelected('')
                         setShowFormFiles(false)
+                        setShowCheckboxFile(false)
                     }}
-                    fileSelected={newFiles.filter(item => item.fileId === fileSelected)[0]}
+                    fileSelected={newFiles.filter(item => item.fileId === fileSelected)[0] ||
+                        newFiles.filter(item => item.selected)[0]}
                     handleChange={(name, value) => {
-                        console.log('name: ', name)
-                        console.log('value: ', value)
-                        setNewFiles((prevFiles) => {
-                            return prevFiles.map((file) =>
-                                file.fileId === fileSelected
-                                    ? { ...file, [name]: value } : file
-                            )
-                        })
+                        const filesSelected = newFiles.filter(item => item.selected).length > 0
+
+                        if (showCheckboxFile && filesSelected) {
+                            setNewFiles((prevFiles) => {
+                                return prevFiles.map((file) =>
+                                    file.selected
+                                        ? { ...file, [name]: value } : file
+                                )
+                            })
+                        } else {
+                            setNewFiles((prevFiles) => {
+                                return prevFiles.map((file) =>
+                                    file.fileId === fileSelected
+                                        ? { ...file, [name]: value } : file
+                                )
+                            })
+                        }
                     }}
                 />
             ) : (
@@ -584,6 +658,8 @@ const UploadFiles: React.FC = () => {
             {newFiles.length > 0 &&
                 <div className="flex w-full justify-center items-center">
                     <Footer
+                        setShowCheckboxFile={setShowCheckboxFile}
+                        showCheckboxFile={showCheckboxFile}
                         handleUpload={handleFileUpload}
                         handleCancel={() => {
                             setNewFiles([])
@@ -591,6 +667,7 @@ const UploadFiles: React.FC = () => {
                         }}
                         setShowNewFiles={setShowNewFiles}
                         setShowGroupFiles={setShowGroupFiles}
+                        setShowFormFiles={setShowFormFiles}
                         showGroupFiles={showGroupFiles}
                         handleGroupFiles={handleGroupFiles}
                     />

@@ -10,13 +10,15 @@ interface FormsProps {
     handleCancel: () => void
     fileSelected: FileWithPreview
     handleChange: (name: string, value: string) => void
+    showCheckboxFile: boolean
 }
 
 
 const FormDetailsFile: React.FC<FormsProps> = ({
     handleCancel,
     fileSelected,
-    handleChange
+    handleChange,
+    showCheckboxFile
 }) => {
     const { loading } = useAppContext()
 
@@ -74,11 +76,12 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                     />
                 </div>
 
-                <div className="mb-3 flex gap-4 items-center">
+                <div className={`mb-3 flex gap-4 items-center ${showCheckboxFile && 'opacity-25'}`}>
                     <label htmlFor="platform" className="block text-sm font-medium text-gray-900">
                         Plataforma*
                     </label>
                     <Dropdown
+                        disabled={showCheckboxFile}
                         title="Selecione uma opção"
                         options={plataform}
                         onSelect={(value) => handleChange('plataform', value)}
@@ -86,12 +89,13 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                     />
                 </div>
 
-                <div className="mb-3 flex gap-4 items-center">
+                <div className={`mb-3 flex gap-4 items-center ${showCheckboxFile && 'opacity-25'}`}>
                     <label htmlFor="format" className="block mb-2 text-sm font-medium text-gray-900">
                         Formato*
                     </label>
                     <Dropdown
                         title="Selecione uma opção"
+                        disabled={showCheckboxFile}
                         options={format}
                         onSelect={(value) => handleChange('format', value)}
                         value={fileSelected?.format}
@@ -156,6 +160,7 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                 </div>
 
                 <div className="flex w-full justify-end py-2 gap-2">
+                    {showCheckboxFile && <Button text="Salvar" isLoading={loading} onClick={handleCancel} />}
                     <Button secondary text="Fechar" isLoading={loading} onClick={handleCancel} />
                 </div>
 
