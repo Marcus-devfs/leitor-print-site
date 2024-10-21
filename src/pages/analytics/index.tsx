@@ -1,13 +1,16 @@
 import { Body, SectionHeader } from "@/components"
 import { Table, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
+import { api } from "@/helpers/api"
 import { FilesAnalyticsObjectData } from "@/helpers/types"
+import { AxiosResponse } from "axios"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 
-const Budget: React.FC = () => {
+const AnalyticsTextData: React.FC = () => {
     const [analytics, setAnalytics] = useState<FilesAnalyticsObjectData[]>([])
     const { setAlertData, setLoading } = useAppContext()
+    const [selectedData, setSelectedData] = useState<string[]>([])
     const router = useRouter()
 
 
@@ -49,6 +52,59 @@ const Budget: React.FC = () => {
     }, [])
 
 
+    const handleCheckboxChange = useCallback((id: string, active: boolean) => {
+        setSelectedData(prevSelected => {
+            if (active) {
+                return [...prevSelected, id]
+            } else {
+                return prevSelected.filter(selectedId => selectedId !== id)
+            }
+        });
+    }, []);
+
+    const handleSendPlanilhaEmail = async () => {
+        if (selectedData?.length > 0) {
+            try {
+                setLoading(true)
+                const response: AxiosResponse<any> = await api.post(`/filesData/send-planilha-email`, { textDataIds: selectedData })
+                const { data } = response
+                if (!data?.success) {
+
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro',
+                        message: 'Tivemos alguns problemas ao enviar planilha por e-mail. Tente novamente mais tarde ou contato o suporte.',
+                        type: 'error'
+                    })
+
+                    return false
+                }
+
+                setAlertData({
+                    active: true,
+                    title: 'Tudo certo!',
+                    message: 'A Planilha foi enviada para seu e-mail.',
+                    type: 'success'
+                })
+
+                setSelectedData([])
+            } catch (error) {
+                console.log(error)
+                return error
+            } finally {
+                setLoading(false)
+            }
+        } else {
+            setAlertData({
+                active: true,
+                title: 'Atenção!',
+                message: 'Selecione pelo menos um dado para enviarmos a planilha.',
+                type: 'info'
+            })
+        }
+    }
+
+
     return (
         <Body>
             <SectionHeader title="Arquivos e Campanhas" />
@@ -56,7 +112,8 @@ const Budget: React.FC = () => {
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
                     <TableSearchInput placeholder="Buscar por Influêncer ou Campanha" />
 
-                    <div className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:text-primary transition duration-150 ease-in-out hover:scale-105 hover:shadow-md rounded-lg">
+                    <div className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:text-primary transition duration-150 ease-in-out hover:scale-105 hover:shadow-md rounded-lg"
+                        onClick={() => handleSendPlanilhaEmail()}>
                         <span className="text-gray-700 text-light text-sm">Exportar em Excel</span>
                         <img
                             src="./icons/excel.png"
@@ -72,11 +129,11 @@ const Budget: React.FC = () => {
                             <tr>
                                 <th scope="col" className="p-4">
                                     <div className="flex items-center">
-                                        <input
+                                        {/* <input
                                             id="checkbox-all-search"
                                             type="checkbox"
                                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2  dark:border-gray-600"
-                                        />
+                                        /> */}
                                         <label
                                             htmlFor="checkbox-all-search"
                                             className="sr-only"
@@ -104,13 +161,19 @@ const Budget: React.FC = () => {
                         </thead>
                         <tbody>
                             {analytics.map((item, index) => {
+                                const selected = selectedData?.includes(item?._id)
                                 return (
-                                    <tr key={index} className="bg-white border-b  hover:bg-gray-50 dark:hover:bg-gray-200">
+                                    <tr key={index} className="bg-white border-b  hover:bg-gray-50 dark:hover:bg-gray-200"
+                                        style={{ backgroundColor: selected ? "#FFE5B5" : "#fff" }}>
                                         <td className="w-4 p-4">
                                             <div className="flex items-center">
                                                 <input
                                                     id="checkbox-table-search-2"
                                                     type="checkbox"
+                                                    checked={selectedData?.includes(item?._id)}
+                                                    onChange={(e) => {
+                                                        handleCheckboxChange(item?._id, e.target.checked)
+                                                    }}
                                                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2  dark:border-gray-600"
                                                 />
                                                 <label
@@ -155,4 +218,4 @@ const Budget: React.FC = () => {
 
 }
 
-export default Budget
+export default AnalyticsTextData

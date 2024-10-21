@@ -180,19 +180,6 @@ const UploadFiles: React.FC = () => {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     };
 
-    const cleanExtractedText = async (text: string) => {
-        return text
-            .replace(/[^\w\s]/g, '') // Remove todos os caracteres não alfanuméricos exceto espaços
-            .replace(/\s+/g, ' ') // Substitui múltiplos espaços por um único
-            .trim(); // Remove espaços no início e fim da string
-    };
-
-    // Função para verificar se um valor é um número válido
-    const isValidNumber = (num: string) => {
-        const numStr = num.replace(/[.,\s]/g, '');
-        return /^\d+$/.test(numStr);
-    };
-
     // Função principal para extrair informações do texto
     const extractInfoFromText = async (result: string[]) => {
         const extractedInfo: any = {
@@ -246,6 +233,15 @@ const UploadFiles: React.FC = () => {
             (result.includes('total') && result.includes('de') && result.includes('espectadores'))) {
             extractedInfo.Plataforma = 'TikTok';
             extractedInfo.Formato = 'Tiktok';
+
+
+            if (
+                (!result.includes('visualizacoes') && !result.includes('de') && !result.includes('video')) ||
+                (!result.includes('localizacoes') && !result.includes('i')) ||
+                (!result.includes('principais') && !result.includes('palavras')) ||
+                !result.includes('genero')) {
+                extractedInfo.print_cortado = true;
+            }
         }
 
         else if ((result.includes('conteudo') && result.includes('do') && result.includes('canal')) ||
@@ -363,7 +359,7 @@ const UploadFiles: React.FC = () => {
                 }
 
                 const sendEmail = await handleSendPlanilhaEmail(textDataIds)
-
+                
                 if (ok && sendEmail) {
                     setAlertData({
                         active: true,

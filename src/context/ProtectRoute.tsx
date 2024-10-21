@@ -23,7 +23,7 @@ export const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
         if(isAuthenticated){
             router.push('/')
         }
-    }, []);
+    }, [isAuthenticated]);
 
     if (!isClient) return null; // Retorna null até que o cliente seja verificado
 

@@ -41,7 +41,7 @@ export interface FilesFromAnalytics {
 }
 
 export interface FilesAnalyticsObjectData {
-    _id: string | null
+    _id: string
     createdAt: string
     updatedAt: string
     keyFile: String,

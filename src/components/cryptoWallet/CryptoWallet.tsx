@@ -33,7 +33,18 @@ export const CryptoModal: React.FC<CryptoModalProps> = ({ isOpen, closeModal, ch
         >
             <div className="relative p-1 w-full gap-2 max-w-sm max-h-full overflow-y-auto bg-white rounded-lg shadow-lg">
                 <div className="relative">
-                    <div className="flex items-center gap-2 justify-between p-4 md:p-5 border-b rounded-t">
+                    <div className="flex items-center gap-4 justify-between p-4 md:p-5 border-b rounded-t">
+
+                        {type === 'success' &&
+                            <CardIcon icon='/icons/checked.png' alt='check-icon' width={25} height={25} />
+                        }
+                        {type === 'error' &&
+                            <CardIcon icon='/icons/error.png' alt='check-icon' width={25} height={25} />
+                        }
+                        {type === 'info' &&
+                            <CardIcon icon='/icons/info.png' alt='check-icon' width={25} height={25} />
+                        }
+
                         <p className="whitespace-nowrap font-semibold text-gray-900">
                             {title}
                         </p>

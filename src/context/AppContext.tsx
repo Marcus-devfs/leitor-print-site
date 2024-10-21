@@ -192,15 +192,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             <div>
                 <CryptoModal title={alertData?.title} type={alertData?.type} isOpen={alertData?.active} closeModal={() => setAlertData({ active: false, title: '', message: '', type: '' })}>
                     <div className='w-full gap-2 align-center flex justify-center py-2 flex-col items-center'>
-                        {alertData?.type === 'success' &&
-                            <CardIcon icon='/icons/checked.png' alt='check-icon' width={45} height={45} />
-                        }
-                        {alertData?.type === 'error' &&
-                            <CardIcon icon='/icons/error.png' alt='check-icon' width={45} height={45} />
-                        }
-                        {alertData?.type === 'info' &&
-                            <CardIcon icon='/icons/info.png' alt='check-icon' width={45} height={45} />
-                        }
                         <p className="mt-5 text-gray-700">{alertData?.message}</p>
                     </div>
                 </CryptoModal>
