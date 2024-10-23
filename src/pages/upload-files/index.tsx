@@ -45,7 +45,7 @@ const UploadFiles: React.FC = () => {
     const { setLoading, userData, setAlertData } = useAppContext()
     const [newFiles, setNewFiles] = useState<FileWithPreview[]>([])
     const [showFormFiles, setShowFormFiles] = useState<boolean>(false)
-    const [fileSelected, setFileSelected] = useState<string>();
+    const [fileSelected, setFileSelected] = useState<string>('');
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showNewFiles, setShowNewFiles] = useState<boolean>(false)
     const [showGroupFiles, setShowGroupFiles] = useState<boolean>(false)
@@ -79,8 +79,25 @@ const UploadFiles: React.FC = () => {
                 return file;
             });
             setNewFiles(updatedFiles);
+        } else {
+            setFileSelected('')
         }
     }, [showCheckboxFile])
+
+    useEffect(() => {
+        if (!showGroupFiles) {
+            const updatedFiles = newFiles.map(file => {
+                if (file.selected) {
+                    return { ...file, selected: false };
+                }
+                return file;
+            });
+            setNewFiles(updatedFiles);
+        } else {
+            setFileSelected('')
+        }
+    }, [showGroupFiles])
+    
 
     const handleProcessFiles = async (fileWithPreview: FileWithPreview[]) => {
         let isHavePrintCortado = false;
@@ -317,6 +334,8 @@ const UploadFiles: React.FC = () => {
                     if (file.plataform) query += `&plataform=${file.plataform}`
                     if (file.type) query += `&type=${file.type}`
                     if (file.groupKey) query += `&groupKey=${file.groupKey}`
+                    if (file.marca_cliente) query += `&marca_cliente=${file.marca_cliente}`
+                    
 
 
                     const fileData = file.file
@@ -359,7 +378,7 @@ const UploadFiles: React.FC = () => {
                 }
 
                 const sendEmail = await handleSendPlanilhaEmail(textDataIds)
-                
+
                 if (ok && sendEmail) {
                     setAlertData({
                         active: true,

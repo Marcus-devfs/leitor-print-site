@@ -243,9 +243,9 @@ const AnalyticsEdit: React.FC = () => {
     ];
 
     const verifyLogoPlataform = (plataform: string): string => {
-        if (plataform === 'Youtube') return '/icons/youtube_icon.png'
-        if (plataform === 'Instagram') return '/icons/instagram_icon.png'
-        if (plataform === 'Tiktok') return '/icons/tiktok_icon.png'
+        if (plataform === 'youtube') return '/icons/youtube_icon.png'
+        if (plataform === 'instagram') return '/icons/instagram_icon.png'
+        if (plataform === 'tiktok') return '/icons/tiktok_icon.png'
 
         return ''
     }
@@ -261,7 +261,7 @@ const AnalyticsEdit: React.FC = () => {
                 <div className="flex w-full pb-5 gap-6 flex-wrap">
                     <div className="flex gap-2 py-3 px-3 items-center">
                         <span className="fw-bold text-gray-900 text-2xl">{analyticsData.format}</span>
-                        <img src={verifyLogoPlataform(analyticsData.plataform)}
+                        <img src={verifyLogoPlataform(analyticsData.plataform.toLowerCase())}
                             className="w-auto h-8" />
                     </div>
                 </div>
