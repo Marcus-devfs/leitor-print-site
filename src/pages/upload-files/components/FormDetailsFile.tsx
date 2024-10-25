@@ -30,6 +30,8 @@ const FormDetailsFile: React.FC<FormsProps> = ({
         { label: "Youtube", value: "Youtube" },
         { label: "Instagram", value: "Instagram" },
         { label: "Tiktok", value: "Tiktok" },
+        { label: "Twitter", value: "Twitter" },
+        { label: "Facebook", value: "Facebook" },
     ];
 
     const format = [
@@ -38,6 +40,9 @@ const FormDetailsFile: React.FC<FormsProps> = ({
         { label: "Reels", value: "Reels" },
         { label: "Tiktok", value: "Tiktok" },
         { label: "Vídeo", value: "Vídeo" },
+        { label: "Tweet", value: "Tweet" },
+        { label: "Short", value: "Short" },
+        { label: "Post", value: "Post" },
     ];
 
     const type = [

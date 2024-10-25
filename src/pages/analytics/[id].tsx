@@ -234,11 +234,18 @@ const AnalyticsEdit: React.FC = () => {
         { label: "Youtube", value: "Youtube" },
         { label: "Instagram", value: "Instagram" },
         { label: "Tiktok", value: "Tiktok" },
+        { label: "Twitter", value: "Twitter" },
+        { label: "Facebook", value: "Facebook" },
     ];
 
     const format = [
+        { label: "Feed", value: "Feed" },
+        { label: "Story", value: "Story" },
         { label: "Reels", value: "Reels" },
-        { label: "Stories", value: "Stories" },
+        { label: "Tiktok", value: "Tiktok" },
+        { label: "Vídeo", value: "Vídeo" },
+        { label: "Tweet", value: "Tweet" },
+        { label: "Short", value: "Short" },
         { label: "Post", value: "Post" },
     ];
 
@@ -246,6 +253,8 @@ const AnalyticsEdit: React.FC = () => {
         if (plataform === 'youtube') return '/icons/youtube_icon.png'
         if (plataform === 'instagram') return '/icons/instagram_icon.png'
         if (plataform === 'tiktok') return '/icons/tiktok_icon.png'
+        if (plataform === 'twitter') return '/icons/twitter.png'
+        if (plataform === 'facebook') return '/icons/facebook.png'
 
         return ''
     }

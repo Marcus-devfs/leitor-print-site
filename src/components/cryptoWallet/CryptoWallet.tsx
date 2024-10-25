@@ -31,7 +31,7 @@ export const CryptoModal: React.FC<CryptoModalProps> = ({ isOpen, closeModal, ch
             id="crypto-modal"
             className={`fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-screen bg-black bg-opacity-50 ${isOpen ? 'block' : 'hidden'}`}
         >
-            <div className="relative p-1 w-full gap-2 max-w-sm max-h-full overflow-y-auto bg-white rounded-lg shadow-lg">
+            <div className="relative p-1 w-full gap-2 max-w-lg max-h-full bg-white rounded-lg shadow-lg">
                 <div className="relative">
                     <div className="flex items-center gap-4 justify-between p-4 md:p-5 border-b rounded-t">
 

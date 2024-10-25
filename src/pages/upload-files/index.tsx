@@ -7,6 +7,7 @@ import { generateRandomId } from "@/helpers";
 import Footer from "./components/footer/Footer";
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios';
 import { api } from "@/helpers/api";
+import { Modal } from "@/components";
 
 
 
@@ -49,6 +50,7 @@ const UploadFiles: React.FC = () => {
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showNewFiles, setShowNewFiles] = useState<boolean>(false)
     const [showGroupFiles, setShowGroupFiles] = useState<boolean>(false)
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [showCheckboxFile, setShowCheckboxFile] = useState<boolean>(false)
     const [uploadProgress, setUploadProgress] = useState<UploadProgress>({});
     const [messageProgress, setMessageProgress] = useState<ProgressUpload>({ message: 'Carregando...', progress: 0 });
@@ -97,7 +99,7 @@ const UploadFiles: React.FC = () => {
             setFileSelected('')
         }
     }, [showGroupFiles])
-    
+
 
     const handleProcessFiles = async (fileWithPreview: FileWithPreview[]) => {
         let isHavePrintCortado = false;
@@ -205,12 +207,16 @@ const UploadFiles: React.FC = () => {
             print_cortado: false
         };
 
-        console.log('result: ', result)
-
         // Validação dos dados de acordo com texto extraído
         if (result.includes('insights') && result.includes('do') && result.includes('reel') || result.includes('interacoes') && result.includes('do') && result.includes('reel')) {
             extractedInfo.Plataforma = 'Instagram';
             extractedInfo.Formato = 'Reels';
+
+            if (!result.includes('comentarios') ||
+                (!result.includes('visao') && !result.includes('geral')) ||
+                !result.includes('curtidas')) {
+                extractedInfo.print_cortado = true
+            }
             // Extrair outros dados específicos do Reels
         } else if (result.includes('story') || result.includes('interacoes') && result.includes('com') && result.includes('stories') || result.includes('proximo') && result.includes('story') || result.includes('toques') && result.includes('em') && result.includes('figurinhas')
         ) {
@@ -268,6 +274,14 @@ const UploadFiles: React.FC = () => {
             (result.includes('youtube'))) {
             extractedInfo.Plataforma = 'Youtube';
             extractedInfo.Formato = 'Vídeo';
+
+            if (!result.includes('visualizacoes') ||
+                (!result.includes('duracao') && !result.includes('media') && !result.includes('da') && !result.includes('visualizacao')) ||
+                (!result.includes('expectadores') && !result.includes('unicos'))
+            ) {
+                extractedInfo.print_cortado = true;
+            }
+
         }
 
         return extractedInfo;
@@ -315,97 +329,154 @@ const UploadFiles: React.FC = () => {
         }
     }
 
+
+    const checkGroupValidation = () => {
+
+        let success = true
+        for (let file of newFiles) {
+            if (file.print_cortado && !file.groupKey) {
+                success = false
+                break
+            }
+        }
+
+        return success
+    }
+
+    const checkValidation = () => {
+
+        let success = true
+        for (let file of newFiles) {
+            const fileData = file.file;
+
+            if (!file.format) {
+                setAlertData({
+                    active: true,
+                    title: 'Você tem arquivos sem formato preenchido!',
+                    message: `Por favor, analíse o arquivo: (${fileData.name}). Está sem formato preenchido.`,
+                    type: 'info'
+                })
+
+                setFileSelected(file.fileId)
+                setShowFormFiles(true)
+                success = false
+                break
+            }
+
+            if (!file.plataform) {
+                setAlertData({
+                    active: true,
+                    title: 'Você tem arquivos sem plataforma preenchida!',
+                    message: `Por favor, analíse o arquivo: (${file.file.name}). Está sem plataforma preenchida.`,
+                    type: 'info'
+                })
+
+                setFileSelected(file.fileId)
+                setShowFormFiles(true)
+                success = false
+                break
+            }
+        }
+
+        return success
+    }
+
     const handleFileUpload = async () => {
-        setLoadingData(true)
-        setUploadProgress({});
+        if (checkValidation()) {
+            setLoadingData(true)
+            setUploadProgress({});
 
-        let textDataIds: string[] = []
+            let textDataIds: string[] = []
 
-        try {
-            let ok = true
-            if (newFiles.length > 0) {
-                for (let file of newFiles) {
+            try {
+                let ok = true
+                if (newFiles.length > 0) {
+                    for (let file of newFiles) {
 
-                    let query = `?userId=${userData._id}`
-                    if (file.campaign) query += `&campaign=${file.campaign}`
-                    if (file.followersNumber) query += `&followersNumber=${file.followersNumber}`
-                    if (file.format) query += `&format=${file.format}`
-                    if (file.influencer) query += `&influencer=${file.influencer}`
-                    if (file.plataform) query += `&plataform=${file.plataform}`
-                    if (file.type) query += `&type=${file.type}`
-                    if (file.groupKey) query += `&groupKey=${file.groupKey}`
-                    if (file.marca_cliente) query += `&marca_cliente=${file.marca_cliente}`
-                    
+                        let query = `?userId=${userData._id}`
+                        if (file.campaign) query += `&campaign=${file.campaign}`
+                        if (file.followersNumber) query += `&followersNumber=${file.followersNumber}`
+                        if (file.format) query += `&format=${file.format}`
+                        if (file.influencer) query += `&influencer=${file.influencer}`
+                        if (file.plataform) query += `&plataform=${file.plataform}`
+                        if (file.type) query += `&type=${file.type}`
+                        if (file.groupKey) query += `&groupKey=${file.groupKey}`
+                        if (file.marca_cliente) query += `&marca_cliente=${file.marca_cliente}`
 
 
-                    const fileData = file.file
-                    const fileName = encodeURIComponent(fileData?.name)
-                    const formData = new FormData()
-                    formData?.append('file', fileData, fileName)
 
-                    const response: AxiosResponse<any> = await axios.post(
-                        `${process.env.NEXT_PUBLIC_API_URL}/file/upload${query}`,
-                        formData, {
-                        onUploadProgress: (event: AxiosProgressEvent) => {
-                            if (event.total) {
-                                let progress: number = Math.round(
-                                    (event.loaded * 100) / event.total
-                                );
+                        const fileData = file.file
+                        const fileName = fileData?.name
+                        const formData = new FormData()
+                        formData?.append('file', fileData, fileName)
 
-                                setMessageProgress({
-                                    message: `Carregando arquivo ${fileName} ${progress}% ... `,
-                                    progress
-                                })
+                        const response: AxiosResponse<any> = await axios.post(
+                            `${process.env.NEXT_PUBLIC_API_URL}/file/upload${query}`,
+                            formData, {
+                            onUploadProgress: (event: AxiosProgressEvent) => {
+                                if (event.total) {
+                                    let progress: number = Math.round(
+                                        (event.loaded * 100) / event.total
+                                    );
 
-                                console.log(
-                                    `A imagem ${fileName} está ${progress}% carregada... `
-                                );
-                            } else {
-                                console.log(event)
+                                    setMessageProgress({
+                                        message: `Carregando arquivo ${fileName} ${progress}% ... `,
+                                        progress
+                                    })
+
+                                    console.log(
+                                        `A imagem ${fileName} está ${progress}% carregada... `
+                                    );
+                                } else {
+                                    console.log(event)
+                                }
+                            },
+                        }
+                        );
+                        const { data } = response
+                        if (!data?.success) ok = false
+
+                        if (data?.textDataId) {
+                            const textId = data?.textDataId
+                            if (!textDataIds.includes(textId)) {
+                                textDataIds.push(textId)
                             }
-                        },
-                    }
-                    );
-                    const { data } = response
-                    if (!data?.success) ok = false
-
-                    if (data?.textDataId) {
-                        const textId = data?.textDataId
-                        if (!textDataIds.includes(textId)) {
-                            textDataIds.push(textId)
                         }
                     }
-                }
 
-                const sendEmail = await handleSendPlanilhaEmail(textDataIds)
+                    // const sendEmail = await handleSendPlanilhaEmail(textDataIds)
+                    const sendEmail = false
 
-                if (ok && sendEmail) {
-                    setAlertData({
-                        active: true,
-                        title: 'Arquivos enviados e processados!',
-                        message: 'Os arquivos foram enviados, e estão sendo processados. Assim que for finalizado, você será avisado por e-mail.',
-                        type: 'success'
-                    })
+                    if (ok && sendEmail) {
+                        setAlertData({
+                            active: true,
+                            title: 'Arquivos enviados e processados!',
+                            message: 'Os arquivos foram enviados, e estão sendo processados. Assim que for finalizado, você será avisado por e-mail.',
+                            type: 'success'
+                        })
 
-                    setNewFiles([])
-                    return true
+                        setNewFiles([])
+                        return true
+                    } else {
+                        setAlertData({
+                            active: true,
+                            title: 'Ocorreu um erro ao enviar arquivos.',
+                            message: 'Tente novamente ou entre em contato conosco para obter suporte.',
+                            type: 'error'
+                        })
+                        return true
+                    }
                 } else {
-                    setAlertData({
-                        active: true,
-                        title: 'Ocorreu um erro ao enviar arquivos.',
-                        message: 'Tente novamente ou entre em contato conosco para obter suporte.',
-                        type: 'error'
-                    })
-                    return true
+                    return false
                 }
-            } else {
+            } catch (error) {
+                console.error('Erro no upload:', error);
                 return false
+            } finally {
+                setLoadingData(false)
             }
-        } catch (error) {
-            console.error('Erro no upload:', error);
+        } else {
             return false
-        } finally {
-            setLoadingData(false)
         }
     };
 
@@ -678,7 +749,13 @@ const UploadFiles: React.FC = () => {
                     <Footer
                         setShowCheckboxFile={setShowCheckboxFile}
                         showCheckboxFile={showCheckboxFile}
-                        handleUpload={handleFileUpload}
+                        handleUpload={async () => {
+                            if (checkGroupValidation()) {
+                                await handleFileUpload()
+                            } else {
+                                setIsModalOpen(true)
+                            }
+                        }}
                         handleCancel={() => {
                             setNewFiles([])
                             setShowFormFiles(false)
@@ -706,6 +783,13 @@ const UploadFiles: React.FC = () => {
                     </div>
                 </div>
             }
+
+            <Modal
+                text={`Você possui prints "possívelmente" cortados e sem "agrupamento". Tem certeza que deseja prosseguir?`}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={() => handleFileUpload()}
+            />
         </div>
     )
 

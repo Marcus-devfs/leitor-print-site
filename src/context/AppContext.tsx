@@ -126,7 +126,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     const checkTokenExpiration = () => {
         const token = localStorage.getItem('token')
 
-        if (token != null) {
+        if (token != null && typeof token == 'string') {
             try {
                 const tokenPayload = JSON.parse(atob(token.split('.')[1]));
                 const expirationTime = tokenPayload.exp * 1000; // em milissegundos
@@ -153,6 +153,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                 }
             } catch (error) {
                 console.error('Erro ao decodificar o token:', error);
+                logout();
                 return error
             }
         }
@@ -189,7 +190,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         >
             {children}
 
-            <div>
+            <div className="flex">
                 <CryptoModal title={alertData?.title} type={alertData?.type} isOpen={alertData?.active} closeModal={() => setAlertData({ active: false, title: '', message: '', type: '' })}>
                     <div className='w-full gap-2 align-center flex justify-center py-2 flex-col items-center'>
                         <p className="mt-5 text-gray-700">{alertData?.message}</p>
