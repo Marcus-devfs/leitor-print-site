@@ -1,14 +1,41 @@
-import { Carousel, SectionHeader } from "@/components"
-import ChartBar from "@/components/charts/ChartBar"
-import ChartPie from "@/components/charts/ChartPie"
-import ChartCard from "@/components/charts/ChartsCard"
 import { useAppContext } from "@/context/AppContext"
+import { formatMilhares, formatPorcentagem } from "@/helpers"
+import { api } from "@/helpers/api"
+import { ReportDashboard } from "@/helpers/types"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 const Dashboard: React.FC = () => {
     const { userData } = useAppContext()
+    const [reportData, setReportData] = useState<ReportDashboard>({
+        influencers: 0,
+        publis: 0,
+        seguidores_totais: 0,
+        impressoes_views: 0,
+        alcance_total: 0,
+        alcance_seguidores: 0,
+        engajamento_total: 0,
+        taxa_de_engajamento: 0,
+        comentarios_total: 0
+    })
     const router = useRouter()
+
+    const fetcherData = async () => {
+        try {
+            const response = await api.get('/report/dashboard')
+            const { indicadores } = response.data
+            setReportData(indicadores)
+
+        } catch (error) {
+            console.log(error)
+            return error
+        }
+    }
+
+    useEffect(() => {
+        fetcherData()
+    }, [])
+    
 
     return (
         <div className="px-8 flex gap-4 justify-center w-full">
@@ -68,17 +95,17 @@ const Dashboard: React.FC = () => {
                 <div className="flex gap-2 w-full">
                     <div className="bg-white px-4 py-4 flex w-full flex-col items-center justify-center rounded-lg border">
                         <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Seguidores Totais</h2>
-                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">1.250</h2>
+                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatMilhares(reportData.seguidores_totais)}</h2>
 
                         <div className="px-2 py-2 flex w-full justify-center items-center gap-2">
                             <div className="bg-white px-4 py-4 flex w-full flex-col items-center rounded-lg shadow">
                                 <span className="text-gray-700 font-light text-md whitespace-nowrap">Influencers</span>
-                                <span className="text-gray-700 font-bold text-md whitespace-nowrap">500</span>
+                                <span className="text-gray-700 font-bold text-md whitespace-nowrap">{formatMilhares(reportData.influencers)}</span>
                             </div>
 
                             <div className="bg-white px-4 py-4 flex w-full flex-col items-center rounded-lg shadow">
                                 <span className="text-gray-700 font-light text-md whitespace-nowrap">Publis</span>
-                                <span className="text-gray-700 font-bold text-md whitespace-nowrap">5.800</span>
+                                <span className="text-gray-700 font-bold text-md whitespace-nowrap">{formatMilhares(reportData.publis)}</span>
                             </div>
                         </div>
                     </div>
@@ -90,7 +117,7 @@ const Dashboard: React.FC = () => {
                         </svg>
 
                         <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Impressões/Views Totais</h2>
-                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">1.250</h2>
+                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatMilhares(reportData.impressoes_views)}</h2>
 
                     </div>
 
@@ -101,7 +128,7 @@ const Dashboard: React.FC = () => {
                         </svg>
 
                         <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Alcance Total</h2>
-                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">32.050</h2>
+                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatMilhares(reportData.alcance_total)}</h2>
 
                     </div>
 
@@ -111,7 +138,7 @@ const Dashboard: React.FC = () => {
                         </svg>
 
                         <h2 className="text-gray-700 font-light text-md whitespace-nowrap">% Alcance X Seguidores</h2>
-                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">7,6%</h2>
+                        <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatPorcentagem(reportData.alcance_seguidores)}</h2>
                     </div>
                 </div>
                 <div className="flex w-full gap-2">
@@ -119,12 +146,12 @@ const Dashboard: React.FC = () => {
                     <div className="bg-white px-2 gap-2 py-2 flex w-full flex-col items-center justify-center rounded-lg border">
                         <div className="bg-white flex w-full flex-col items-center rounded-lg shadow px-2 py-2">
                             <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Engajamentos Totais</h2>
-                            <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">7,6%</h2>
+                            <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatMilhares(reportData.engajamento_total)}</h2>
                         </div>
 
                         <div className="bg-white flex w-full flex-col items-center rounded-lg shadow px-2 py-2">
                             <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Taxa de Engajamentos</h2>
-                            <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">7,6%</h2>
+                            <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatPorcentagem(reportData.taxa_de_engajamento)}</h2>
                         </div>
                     </div>
 
@@ -134,9 +161,11 @@ const Dashboard: React.FC = () => {
                         </svg>
 
                         <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Comentários</h2>
-                        <h2 className="text-gray-700 font-bold text-3xl whitespace-nowrap">7,6%</h2>
+                        <h2 className="text-gray-700 font-bold text-3xl whitespace-nowrap">{formatMilhares(reportData.comentarios_total)}</h2>
                     </div>
                 </div>
+
+
             </div>
         </div>
     )

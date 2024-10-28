@@ -77,3 +77,15 @@ export interface FilesAnalyticsObjectData {
     userId: string
     files: FilesFromAnalytics[] | []
 }
+
+export interface ReportDashboard {
+    influencers: string | number
+    publis: string | number
+    seguidores_totais: string | number
+    impressoes_views: string | number
+    alcance_total: string | number
+    alcance_seguidores: string | number
+    engajamento_total: string | number
+    taxa_de_engajamento: string | number
+    comentarios_total: string | number
+}
