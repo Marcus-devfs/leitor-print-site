@@ -8,7 +8,9 @@ import React, { useEffect, useState } from "react"
 
 const Users: React.FC = () => {
     const [users, setUsers] = useState<UserDataObject[]>([])
+    const [searchText, setSearchText] = useState<string>('')
     const { setAlertData } = useAppContext()
+
     const router = useRouter()
 
 
@@ -59,7 +61,11 @@ const Users: React.FC = () => {
             <div className="flex w-full h-full flex-col">
                 <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white py-2 px-2">
                     <TableDropdownMenu items={dropdownItems} />
-                    <TableSearchInput placeholder="Pesquisar por Usuario" />
+                    <TableSearchInput placeholder="Pesquisar por Usuario"
+                        value={searchText}
+                        handleChange={(value) => setSearchText(value)}
+                        fetchData={() => getUsers()}
+                    />
                 </div>
                 <Table>
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 border">
