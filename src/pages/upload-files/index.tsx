@@ -376,6 +376,20 @@ const UploadFiles: React.FC = () => {
                 success = false
                 break
             }
+
+            if (!file.influencer || file.influencer == '') {
+                setAlertData({
+                    active: true,
+                    title: 'Você tem arquivos sem influêncer preenchido!',
+                    message: `Por favor, analíse o arquivo: (${file.file.name}). Está sem influêncer preenchido.`,
+                    type: 'info'
+                })
+
+                setFileSelected(file.fileId)
+                setShowFormFiles(true)
+                success = false
+                break
+            }
         }
 
         return success
@@ -444,8 +458,7 @@ const UploadFiles: React.FC = () => {
                         }
                     }
 
-                    // const sendEmail = await handleSendPlanilhaEmail(textDataIds)
-                    const sendEmail = false
+                    const sendEmail = await handleSendPlanilhaEmail(textDataIds)
 
                     if (ok && sendEmail) {
                         setAlertData({
@@ -510,7 +523,7 @@ const UploadFiles: React.FC = () => {
                     return file;
                 });
                 setNewFiles(updatedFiles);
-                setShowGroupFiles(false)
+                // setShowGroupFiles(false)
             } else {
                 setAlertData({
                     active: true,
@@ -705,7 +718,7 @@ const UploadFiles: React.FC = () => {
                 }
             </div>
 
-            {(newFiles.length > 0 && showFormFiles && (fileSelected || showCheckboxFile || newFiles.filter(item => item.selected).length > 0)) ? (
+            {(newFiles.length > 0 && showFormFiles && !loadingData && (fileSelected || showCheckboxFile || newFiles.filter(item => item.selected).length > 0)) ? (
                 <FormDetailsFile
                     showCheckboxFile={showCheckboxFile}
                     handleCancel={() => {
@@ -744,7 +757,7 @@ const UploadFiles: React.FC = () => {
                 </div>
             )}
 
-            {newFiles.length > 0 &&
+            {(newFiles.length > 0 && !loadingData) && 
                 <div className="flex w-full justify-center items-center">
                     <Footer
                         setShowCheckboxFile={setShowCheckboxFile}

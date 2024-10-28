@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 interface DropdownMenuProps {
-    items: { label: string; href: string }[];
+    items: { label: string; href: string, onclick?: () => {} }[];
 }
 
 export const TableDropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => {
@@ -40,11 +40,23 @@ export const TableDropdownMenu: React.FC<DropdownMenuProps> = ({ items }) => {
             {isOpen && (
                 <div className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 absolute mt-2">
                     <ul className="py-1 text-sm text-gray-700">
-                        {items.map((item, index) => (
-                            <Link className="block px-4 py-2 hover:bg-gray-100" key={index} href={item?.href || ''}>
-                                {item.label}
-                            </Link>
-                        ))}
+                        {items.map((item, index) => {
+                            if (item.onclick) {
+                                return (
+                                    <div className="block px-4 py-2 hover:bg-gray-100 cursor-pointer" key={index} onClick={() => {
+                                        item.onclick && item.onclick()
+                                        setIsOpen(false)
+                                    }}>
+                                        <span> {item.label}</span>
+                                    </div>
+                                )
+                            }
+                            return (
+                                <Link className="block px-4 py-2 hover:bg-gray-100" key={index} href={item?.href || ''}>
+                                    {item.label}
+                                </Link>
+                            )
+                        })}
                     </ul>
                 </div>
             )}

@@ -1,5 +1,6 @@
 import { Body, SectionHeader } from "@/components"
-import { Table, TableSearchInput } from "@/components/table"
+import { Button } from "@/components/button/Button"
+import { Table, TableDropdownMenu, TablePagination, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
 import { api } from "@/helpers/api"
 import { FilesAnalyticsObjectData } from "@/helpers/types"
@@ -9,22 +10,22 @@ import React, { useCallback, useEffect, useState } from "react"
 
 const AnalyticsTextData: React.FC = () => {
     const [analytics, setAnalytics] = useState<FilesAnalyticsObjectData[]>([])
-    const { setAlertData, setLoading } = useAppContext()
+    const { setAlertData, setLoading, userData } = useAppContext()
     const [selectedData, setSelectedData] = useState<string[]>([])
+    const [allSelectedData, setAllSelectedData] = useState<boolean>(false)
+    const [searchText, setSearchText] = useState<string>('')
     const router = useRouter()
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const itemsPerPage = 10;
 
 
     const getAnalytics = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`/api/analytics/list`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
+            const response = await api.get(`/filesData/list?page=${currentPage}&limit=${itemsPerPage}&search=${searchText}&userId=${userData._id}`);
+            const { success, filesData, total } = response.data
+            if (!success) {
                 setAlertData({
                     active: true,
                     title: 'Ocorreu um erro ao buscar os Análises.',
@@ -34,10 +35,9 @@ const AnalyticsTextData: React.FC = () => {
                 return
             }
 
-            const data = await response.json();
-
-            if (data.success) {
-                setAnalytics(data.filesData);
+            if (success) {
+                setAnalytics(filesData);
+                setTotalPages(Math.ceil(total / itemsPerPage)); // Calcula o total de páginas
             }
 
         } catch (error) {
@@ -49,7 +49,7 @@ const AnalyticsTextData: React.FC = () => {
 
     useEffect(() => {
         getAnalytics()
-    }, [])
+    }, [currentPage])
 
 
     const handleCheckboxChange = useCallback((id: string, active: boolean) => {
@@ -61,6 +61,27 @@ const AnalyticsTextData: React.FC = () => {
             }
         });
     }, []);
+
+
+    const handleAllCheckboxSelected = useCallback(() => {
+
+        const allSelected = selectedData?.length == analytics?.length
+
+        if (allSelected) setAllSelectedData(false)
+        else setAllSelectedData(true)
+
+        setSelectedData(prevSelected => {
+            if (allSelected) {
+                return []
+            } else {
+                return analytics.map(item => item._id)
+            }
+        });
+    }, [analytics, selectedData]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     const handleSendPlanilhaEmail = async () => {
         if (selectedData?.length > 0) {
@@ -104,41 +125,104 @@ const AnalyticsTextData: React.FC = () => {
         }
     }
 
+    const handleDeleteTextFiles = async () => {
+        if (selectedData?.length > 0) {
+            try {
+                setLoading(true)
+                let success = true
+                for (let id of selectedData) {
+                    const response: AxiosResponse<any> = await api.delete(`/filesData/delete/${id}`)
+                    const { data } = response
+                    if (!data?.success) {
+                        success = false
+                    }
+
+                }
+                if (!success) {
+
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro',
+                        message: 'Tivemos alguns problemas ao excluír dados. Tente novamente mais tarde ou contato o suporte.',
+                        type: 'error'
+                    })
+
+                    return false
+                }
+
+
+                setAlertData({
+                    active: true,
+                    title: 'Tudo certo!',
+                    message: 'Os dados foram excluídos.',
+                    type: 'success'
+                })
+
+                await getAnalytics()
+
+                setSelectedData([])
+            } catch (error) {
+                console.log(error)
+                return error
+            } finally {
+                setLoading(false)
+            }
+        } else {
+            setAlertData({
+                active: true,
+                title: 'Atenção!',
+                message: 'Selecione pelo menos um dado que será excluído.',
+                type: 'info'
+            })
+        }
+    }
+
+    const dropdownItems = [
+        { label: 'Novo', href: '/upload-files' },
+        { label: 'Excluír', href: '#', onclick: () => handleDeleteTextFiles() }
+    ];
+
 
     return (
         <Body>
             <SectionHeader title="Arquivos e Campanhas" />
-            <div className="flex w-full h-full flex-col">
-                <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-2">
-                    <TableSearchInput placeholder="Buscar por Influêncer ou Campanha" />
 
-                    <div className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:text-primary transition duration-150 ease-in-out hover:scale-105 hover:shadow-md rounded-lg"
-                        onClick={() => handleSendPlanilhaEmail()}>
-                        <span className="text-gray-700 text-light text-sm">Exportar em Excel</span>
-                        <img
-                            src="./icons/excel.png"
-                            className="h-6 w-6"
-                            alt="excel-logo"
-                        />
+            {analytics && analytics?.length > 0 ?
+                <div className="flex w-full h-full flex-col">
+                    <div className="flex items-center rounded justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white px-2 py-4">
+
+                        <TableDropdownMenu items={dropdownItems} />
+
+                        <div className="flex gap-4 items-center">
+                            <TableSearchInput placeholder="Buscar por Influêncer"
+                                value={searchText} handleChange={(value) => setSearchText(value)}
+                                fetchData={() => getAnalytics()} />
+                            <div className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:text-primary transition duration-150 ease-in-out hover:scale-105 hover:shadow-md rounded-lg"
+                                onClick={() => handleSendPlanilhaEmail()}>
+                                <span className="text-gray-700 text-light text-sm">Exportar em Excel</span>
+                                <img
+                                    src="./icons/excel.png"
+                                    className="h-6 w-6"
+                                    alt="excel-logo"
+                                />
+                            </div>
+                        </div>
+
                     </div>
-
-                </div>
-                {analytics && analytics?.length > 0 ?
                     <Table>
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 border">
                             <tr>
                                 <th scope="col" className="p-4">
                                     <div className="flex items-center">
-                                        {/* <input
+                                        <input
                                             id="checkbox-all-search"
                                             type="checkbox"
-                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2  dark:border-gray-600"
-                                        /> */}
-                                        <label
-                                            htmlFor="checkbox-all-search"
-                                            className="sr-only"
-                                        >
-                                            checkbox
+                                            checked={selectedData.length === analytics.length && analytics.length > 0}
+                                            onChange={handleAllCheckboxSelected}
+                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:border-gray-600"
+                                        />
+                                        <label htmlFor="checkbox-all-search" className="sr-only">
+                                            Selecionar todos
                                         </label>
                                     </div>
                                 </th>
@@ -211,8 +295,22 @@ const AnalyticsTextData: React.FC = () => {
                             })}
                         </tbody>
                     </Table>
-                    : <span className="text-gray-600">Não encontramos Análises.</span>}
-            </div>
+
+                    <TablePagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={handlePageChange}
+                    />
+                </div>
+                : (
+                    <div className="flex gap-4 w-full items-center justify-center mt-20">
+                        <div className="flex gap-4 flex-col items-center">
+                            <span className="text-gray-600">Não encontramos Dados processados.</span>
+                            <Button text="Subir Imagem" onClick={() => router.push('/upload-files')} />
+                        </div>
+                    </div>
+                )}
         </Body>
     )
 

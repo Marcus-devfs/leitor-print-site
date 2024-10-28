@@ -1,8 +1,15 @@
+import { ChangeEvent } from "react";
+
 interface SearchInputProps {
     placeholder: string;
+    value: string
+    handleChange: (value: string) => void
+    fetchData?: () => void
 }
 
-export const TableSearchInput: React.FC<SearchInputProps> = ({ placeholder }) => {
+export const TableSearchInput: React.FC<SearchInputProps> = ({ placeholder,
+    value, handleChange,
+    fetchData }) => {
     return (
         <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -27,7 +34,10 @@ export const TableSearchInput: React.FC<SearchInputProps> = ({ placeholder }) =>
                 id="table-search-users"
                 className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                 placeholder={placeholder}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
+                value={value}
             />
+            <button onClick={fetchData} className="text-white absolute end-1 bottom-1 bg-primary focus:ring-4 focus:outline-none focus:bg-primary font-medium rounded-lg text-sm px-3 py-1 top-1 ">Buscar</button>
         </div>
     );
 };
