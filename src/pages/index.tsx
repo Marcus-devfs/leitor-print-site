@@ -8,6 +8,10 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const router = useRouter()
 
+  useEffect(() => {
+    router.push('/dashboard')
+  }, [])
+
   return (
     <Body>
       <div className="flex flex-col gap-4 w-full pt-24 justify-start h-full" >

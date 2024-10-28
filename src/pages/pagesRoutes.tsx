@@ -2,6 +2,8 @@ import Head from 'next/head';
 import { FC } from 'react';
 import { ProtectRoute } from '@/context/ProtectRoute';
 import { useAppContext } from '@/context/AppContext';
+import { Navbar } from '@/components/navbar/Navbar';
+import { MenuList } from '@/helpers/menu';
 
 interface PagesRouteProps {
     Component: React.ComponentType<any> & { noPadding?: boolean };
@@ -23,7 +25,7 @@ const PagesRoute: FC<PagesRouteProps> = ({ Component, pageProps }) => {
             </Head>
             <ProtectRoute>
                 <div className="bg-gray-100 min-h-screen flex w-full">
-                    {/* <Navbar menu={userData ? MenuList : MenuLadingPage} /> */}
+                    <Navbar menu={MenuList} />
                     <div className="flex overflow-auto w-full flex-col gap-8 py-12 h-full pt-32">
                         <Component {...pageProps} />
                     </div>
