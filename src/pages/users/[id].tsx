@@ -1,6 +1,7 @@
 import { Body, SectionHeader } from "@/components"
 import { Button } from "@/components/button/Button"
 import { useAppContext } from "@/context/AppContext"
+import { api } from "@/helpers/api"
 import { UserDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
@@ -43,20 +44,12 @@ const UserEdit: React.FC = () => {
         setUserData({ ...userData, permissions: updatedValues });
     };
 
-    console.log(userData)
-
-
     const getUser = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`/api/user/get?userId=${id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
+            const response = await api.get(`/user/${id}`);
+            const { success, user } = response?.data
+            if (!success) {
                 setAlertData({
                     active: true,
                     title: 'Ocorreu um erro ao buscar usuário.',
@@ -66,20 +59,15 @@ const UserEdit: React.FC = () => {
                 return
             }
 
-            const data = await response.json();
-
-            if (data.success) {
-                const { name, email, phone, permissions } = data.user
-                setUserData({
-                    name,
-                    email,
-                    phone,
-                    password: '',
-                    confirmPassword: '',
-                    permissions
-                });
-
-            }
+            const { name, email, phone, permissions } = user
+            setUserData({
+                name,
+                email,
+                phone,
+                password: '',
+                confirmPassword: '',
+                permissions
+            });
 
         } catch (error) {
             console.log(error)
@@ -137,15 +125,9 @@ const UserEdit: React.FC = () => {
     const handleUpdate = async () => {
         setLoading(true)
         try {
-            const response = await fetch('/api/user/update', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userData, userId: id } as Record<string, unknown>)
-            });
-
-            if (!response.ok) {
+            const response = await api.patch(`/user/update/${id}`, { userData });
+            const { success, user } = response?.data
+            if (!success) {
                 setAlertData({
                     active: true,
                     title: 'Erro na atualização.',
@@ -155,26 +137,22 @@ const UserEdit: React.FC = () => {
                 return
             }
 
-            const data = await response.json();
+            const { name, email, phone, permissions } = user
+            setUserData({
+                name,
+                email,
+                phone,
+                password: '',
+                confirmPassword: '',
+                permissions
+            });
 
-            if (data.success) {
-                const { name, email, phone, permissions } = data.user
-                setUserData({
-                    name,
-                    email,
-                    phone,
-                    password: '',
-                    confirmPassword: '',
-                    permissions
-                });
-
-                setAlertData({
-                    active: true,
-                    title: 'Atualizado!',
-                    message: 'Informações do usuário atualizadas.',
-                    type: 'success'
-                })
-            }
+            setAlertData({
+                active: true,
+                title: 'Atualizado!',
+                message: 'Informações do usuário atualizadas.',
+                type: 'success'
+            })
             return
         } catch (error) {
             console.error('Erro ao verificar o usuário:', error);
@@ -187,14 +165,11 @@ const UserEdit: React.FC = () => {
     const handleDelete = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`/api/user/delete?userId=${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await api.delete(`/user/delete/${id}`);
 
-            if (!response.ok) {
+            const { success } = response?.data
+
+            if (!success) {
                 setAlertData({
                     active: true,
                     title: 'Ocorreu um erro ao excluir usuário.',
@@ -204,19 +179,14 @@ const UserEdit: React.FC = () => {
                 return
             }
 
-            const data = await response.json();
+            setAlertData({
+                active: true,
+                title: 'Tudo Certo!',
+                message: 'Usuário excluído com sucesso!',
+                type: 'success'
+            })
 
-            if (data.success) {
-
-                setAlertData({
-                    active: true,
-                    title: 'Tudo Certo!',
-                    message: 'Usuário excluído com sucesso!',
-                    type: 'success'
-                })
-
-                router.push('/users')
-            }
+            router.push('/users')
 
         } catch (error) {
             console.log(error)

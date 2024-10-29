@@ -16,9 +16,6 @@ export const MenuList: MenuItem[] = [
         id: '03', title: 'Usuários', icon: '', path: '/users', submenu: [], permissions: ['admin']
     },
     {
-        id: '04', title: 'Clientes', icon: '', path: '/customer', submenu: [], permissions: ['admin']
-    },
-    {
         id: '05', title: 'Arquivos enviados', icon: '', path: '/analytics', submenu: [], permissions: ['client']
     },
 ]

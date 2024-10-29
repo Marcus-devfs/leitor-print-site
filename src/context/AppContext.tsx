@@ -1,6 +1,5 @@
 import { CryptoModal } from "@/components";
-import { CardIcon } from "@/components/card";
-import { ReactNode, createContext, useContext, useEffect, useReducer, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { api } from "@/helpers/api";
 import { useRouter } from "next/router";
 
@@ -66,6 +65,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             } catch (error) {
                 localStorage.setItem('token', '')
                 console.log(error)
+                return false
             } finally {
                 setLoading(false)
             }
@@ -123,57 +123,57 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }, [])
 
 
-    const checkTokenExpiration = () => {
-        const token = localStorage.getItem('token')
+    // const checkTokenExpiration = () => {
+    //     const token = localStorage.getItem('token')
 
-        if (token != null && typeof token == 'string') {
-            try {
-                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-                const expirationTime = tokenPayload.exp * 1000; // em milissegundos
-                const currentTime = new Date().getTime();
-                const timeUntilExpiration = expirationTime - currentTime;
-                const notificationThreshold = 5 * 60 * 1000;
+    //     if (token != null && typeof token == 'string') {
+    //         try {
+    //             const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+    //             const expirationTime = tokenPayload.exp * 1000; // em milissegundos
+    //             const currentTime = new Date().getTime();
+    //             const timeUntilExpiration = expirationTime - currentTime;
+    //             const notificationThreshold = 5 * 60 * 1000;
 
-                if (timeUntilExpiration < 0) {
-                    logout();
-                    setAlertData({
-                        active: true,
-                        title: 'Sessão expirada!',
-                        message: 'Sua sessão expirou. Faça login novamente.',
-                        type: 'alert'
-                    })
+    //             if (timeUntilExpiration < 0) {
+    //                 logout();
+    //                 setAlertData({
+    //                     active: true,
+    //                     title: 'Sessão expirada!',
+    //                     message: 'Sua sessão expirou. Faça login novamente.',
+    //                     type: 'alert'
+    //                 })
 
-                } else if (timeUntilExpiration < notificationThreshold) {
-                    setAlertData({
-                        active: true,
-                        title: 'Seu token está expirando!',
-                        message: 'Seu token está prestes a expirar. Faça login novamente.',
-                        type: 'alert'
-                    })
-                }
-            } catch (error) {
-                console.error('Erro ao decodificar o token:', error);
-                logout();
-                return error
-            }
-        }
-    };
-    useEffect(() => {
-        checkTokenExpiration();
+    //             } else if (timeUntilExpiration < notificationThreshold) {
+    //                 setAlertData({
+    //                     active: true,
+    //                     title: 'Seu token está expirando!',
+    //                     message: 'Seu token está prestes a expirar. Faça login novamente.',
+    //                     type: 'alert'
+    //                 })
+    //             }
+    //         } catch (error) {
+    //             console.error('Erro ao decodificar o token:', error);
+    //             logout();
+    //             return error
+    //         }
+    //     }
+    // };
+    // useEffect(() => {
+    //     checkTokenExpiration();
 
-        // Adicione um listener para mudanças de rota
-        const handleRouteChange = () => {
-            checkTokenExpiration();
-        };
+    //     // Adicione um listener para mudanças de rota
+    //     const handleRouteChange = () => {
+    //         checkTokenExpiration();
+    //     };
 
-        // Adicione o listener
-        router.events.on('routeChangeStart', handleRouteChange);
+    //     // Adicione o listener
+    //     router.events.on('routeChangeStart', handleRouteChange);
 
-        // Remova o listener quando o componente for desmontado
-        return () => {
-            router.events.off('routeChangeStart', handleRouteChange);
-        };
-    }, []);
+    //     // Remova o listener quando o componente for desmontado
+    //     return () => {
+    //         router.events.off('routeChangeStart', handleRouteChange);
+    //     };
+    // }, []);
 
 
     return (

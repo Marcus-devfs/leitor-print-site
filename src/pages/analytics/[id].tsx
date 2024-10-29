@@ -110,14 +110,11 @@ const AnalyticsEdit: React.FC = () => {
     const getAnalytics = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`/api/analytics/get?filesAnalyticId=${id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await api.get(`/filesData/${id}`);
 
-            if (!response.ok) {
+            const { success, filesData } = response?.data
+
+            if (!success) {
                 setAlertData({
                     active: true,
                     title: 'Ocorreu um erro ao buscar Análise.',
@@ -127,11 +124,7 @@ const AnalyticsEdit: React.FC = () => {
                 return
             }
 
-            const data = await response.json();
-
-            if (data.success) {
-                setAnalyticsData(data.filesData);
-            }
+            setAnalyticsData(filesData);
 
         } catch (error) {
             console.log(error)
@@ -145,89 +138,6 @@ const AnalyticsEdit: React.FC = () => {
             getAnalytics()
         }
     }, [id])
-
-    const handleUpdate = async () => {
-        setLoading(true)
-        try {
-            const response = await fetch('/api/analytics/update', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ analyticsData, customerId: id } as Record<string, unknown>)
-            });
-
-            if (!response.ok) {
-                setAlertData({
-                    active: true,
-                    title: 'Erro na atualização.',
-                    message: 'Erro ao atualizar a Análise',
-                    type: 'error'
-                })
-                return
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                setAnalyticsData(data.analytics)
-
-                setAlertData({
-                    active: true,
-                    title: 'Atualizado!',
-                    message: 'Informações da Análise atualizadas.',
-                    type: 'success'
-                })
-            }
-            return
-        } catch (error) {
-            console.error('Erro ao verificar a Análise:', error);
-            return error
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleDelete = async () => {
-        setLoading(true)
-        try {
-            const response = await fetch(`/api/analytics/delete?filesAnalyticId=${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                setAlertData({
-                    active: true,
-                    title: 'Ocorreu um erro ao excluir Análise.',
-                    message: 'Erro ao excluir Análise',
-                    type: 'error'
-                })
-                return
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-
-                setAlertData({
-                    active: true,
-                    title: 'Tudo Certo!',
-                    message: 'Análise excluída com sucesso!',
-                    type: 'success'
-                })
-
-                router.push('/analytics')
-            }
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
-        }
-    }
 
 
     const plataform = [

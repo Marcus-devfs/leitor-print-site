@@ -1,6 +1,7 @@
 import { Body, SectionHeader } from "@/components"
 import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
+import { api } from "@/helpers/api"
 import { UserDataObject } from "@/helpers/types"
 import { randomUUID } from "crypto"
 import { useRouter } from "next/router"
@@ -16,14 +17,9 @@ const Users: React.FC = () => {
 
     const getUsers = async () => {
         try {
-            const response = await fetch(`/api/user/list`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
+            const response = await api.get(`/user/list`);
+            const { success, users } = response?.data
+            if (!success) {
                 setAlertData({
                     active: true,
                     title: 'Ocorreu um erro ao buscar os usuários.',
@@ -33,11 +29,7 @@ const Users: React.FC = () => {
                 return
             }
 
-            const data = await response.json();
-
-            if (data.success) {
-                setUsers(data.users);
-            }
+            setUsers(users);
 
         } catch (error) {
             console.log(error)
