@@ -4,6 +4,9 @@ import { api } from "@/helpers/api"
 import { ReportDashboard } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
+import CardItem from "./component/CardItem"
+import { TablePlataform } from "./component/TablePlataform"
+import { TableInfluencerDetails } from "./component/TableInfluencer"
 
 const Dashboard: React.FC = () => {
     const { userData } = useAppContext()
@@ -18,14 +21,17 @@ const Dashboard: React.FC = () => {
         taxa_de_engajamento: 0,
         comentarios_total: 0
     })
+    const [report, setReport] = useState<any>({})
+    const [graphSelected, setGraphSelected] = useState<string>('video_curto')
     const router = useRouter()
+
 
     const fetcherData = async () => {
         try {
             const response = await api.get('/report/dashboard')
-            const { indicadores } = response.data
+            const { indicadores, reports } = response.data
             setReportData(indicadores)
-
+            setReport(reports)
         } catch (error) {
             console.log(error)
             return error
@@ -35,7 +41,17 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         fetcherData()
     }, [])
-    
+
+
+    const IconPaths = {
+        todos: "M10 19H5a1 1 0 0 1-1-1v-1a3 3 0 0 1 3-3h2m10 1a3 3 0 0 1-3 3m3-3a3 3 0 0 0-3-3m3 3h1m-4 3a3 3 0 0 1-3-3m3 3v1m-3-4a3 3 0 0 1 3-3m-3 3h-1m4-3v-1m-2.121 1.879-.707-.707m5.656 5.656-.707-.707m-4.242 0-.707.707m5.656-5.656-.707.707M12 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
+        video_curto: "M10 19H5a1 1 0 0 1-1-1v-1a3 3 0 0 1 3-3h2m10 1a3 3 0 0 1-3 3m3-3a3 3 0 0 0-3-3m3 3h1m-4 3a3 3 0 0 1-3-3m3 3v1m-3-4a3 3 0 0 1 3-3m-3 3h-1m4-3v-1m-2.121 1.879-.707-.707m5.656 5.656-.707-.707m-4.242 0-.707.707m5.656-5.656-.707.707M12 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z",
+        stories: "M10 3v4a1 1 0 0 1-1 1H5m4 10v-2m3 2v-6m3 6v-3m4-11v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z",
+        video_longo: "M12 5v9m-5 0H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2M8 9l4-5 4 5m1 8h.01",
+        outros: "M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"
+    };
+
+
 
     return (
         <div className="px-8 flex gap-4 justify-center w-full">
@@ -165,7 +181,34 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
+                <div className="flex gap-4 w-full bg-white items-center px-4 py-4 rounded-lg border">
+                    <CardItem text="Ver Todos" icon={IconPaths.todos} onClick={() => setGraphSelected('todos')} isSelected={graphSelected === 'todos'} />
+                    <CardItem text="Vídeos Curtos" icon={IconPaths.video_curto} onClick={() => setGraphSelected('video_curto')} isSelected={graphSelected === 'video_curto'} />
+                    <CardItem text="Stories" icon={IconPaths.stories} onClick={() => setGraphSelected('stories')} isSelected={graphSelected === 'stories'} />
+                    <CardItem text="Vídeo Longo" icon={IconPaths.video_longo} onClick={() => setGraphSelected('video_longo')} isSelected={graphSelected === 'video_longo'} />
+                    <CardItem text="Outras Plataformas" icon={IconPaths.outros} onClick={() => setGraphSelected('outras_plataformas')} isSelected={graphSelected === 'outras_plataformas'} />
+                </div>
 
+
+                <div>
+                    {report[graphSelected]?.table_v1?.data?.length > 0 ?
+                        <div className="flex gap-2 flex-col">
+                            <h1 className="text-primary text-lg mt-4">{report[graphSelected]?.table_v1?.title}</h1>
+                            <TablePlataform data={report[graphSelected]?.table_v1?.data} />
+                        </div>
+                        :
+                        <span className="text-gray-500">Não possúi dados.</span>
+                    }
+
+                    {report[graphSelected]?.table_v2?.data?.length > 0 ?
+                        <div className="flex gap-2 flex-col">
+                            <h1 className="text-primary text-lg mt-4">{report[graphSelected]?.table_v2?.title}</h1>
+                            <TablePlataform data={report[graphSelected]?.table_v2?.data} />
+                        </div>
+                        :
+                        <span className="text-gray-500">Não possúi dados.</span>
+                    }
+                </div>
             </div>
         </div>
     )
