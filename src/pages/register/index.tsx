@@ -20,6 +20,7 @@ const Register: React.FC = () => {
         email: '',
         phone: '',
         password: null,
+        paying: false,
         confirmPassword: null,
         permissions: []
     })

@@ -4,7 +4,7 @@ import { useAppContext } from "@/context/AppContext"
 import { api } from "@/helpers/api"
 import { NewUserDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
+import React, { ChangeEvent, useEffect, useState } from "react"
 
 const UserEdit: React.FC = () => {
     const [userData, setUserData] = useState<NewUserDataObject>({
@@ -13,6 +13,7 @@ const UserEdit: React.FC = () => {
         phone: '',
         password: null,
         confirmPassword: null,
+        paying: false,
         permissions: []
     })
     const { setAlertData, setLoading, loading, userData: user } = useAppContext()
@@ -39,6 +40,7 @@ const UserEdit: React.FC = () => {
         setUserData({ ...userData, permissions: updatedValues });
     };
 
+
     const getUser = async () => {
         setLoading(true)
         try {
@@ -54,8 +56,9 @@ const UserEdit: React.FC = () => {
                 return
             }
 
-            const { name, email, phone, permissions } = user
+            const { name, email, phone, permissions, paying } = user
             setUserData({
+                paying,
                 name,
                 email,
                 phone,
@@ -132,8 +135,9 @@ const UserEdit: React.FC = () => {
                 return
             }
 
-            const { name, email, phone, permissions } = user
+            const { name, email, phone, permissions, paying } = user
             setUserData({
+                paying,
                 name,
                 email,
                 phone,
@@ -314,6 +318,17 @@ const UserEdit: React.FC = () => {
                             </div>
                         </div>
                     </div>
+
+                    <div className="mb-6">
+                        <label className="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" className="sr-only peer" checked={userData.paying}
+                                onChange={() => setUserData(prev => ({...prev, paying: !prev.paying}))}
+                            />
+                            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900"> Acesso Pagante</span>
+                        </label>
+                    </div>
+
                 </>}
 
                 <div className="flex gap-2">

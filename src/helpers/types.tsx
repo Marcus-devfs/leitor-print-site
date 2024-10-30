@@ -3,6 +3,7 @@ export interface UserDataObject {
     name: string | null
     email: string | null
     phone: string | null
+    paying: boolean
     password?: string | null
     confirmPassword?: string | null
     permissions: string[]
@@ -14,6 +15,7 @@ export interface NewUserDataObject {
     email: string | null
     phone: string | null
     password?: string | null
+    paying: boolean,
     confirmPassword?: string | null
     permissions: string[]
 }

@@ -11,6 +11,7 @@ export interface UserAuthentication {
 interface AppContextType {
     handleLogin: (userData: UserAuthentication) => Promise<void | object | any>;
     loading: boolean
+    isPayingPermission: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     userData: object | any;
     setUserData: React.Dispatch<React.SetStateAction<object | any>>;
@@ -37,6 +38,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [userData, setUserData] = useState<object | any>();
+    const [isPayingPermission, setIsPayingPermission] = useState<boolean>(false);
+
     const [alertData, setAlertData] = useState<AlertData>({
         active: false,
         title: '',
@@ -59,8 +62,15 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                     const response = await api.post('/user/loginbytoken')
                     const { success } = response.data
 
-                    if (success) setUserData(response.data.user);
-                    else setUserData(null);
+                    if (success) {
+                        const { user } = response.data
+                        setUserData(response.data.user)
+                        console.log(user.paying)
+                        console.log(user.permissions)
+                        
+                        const isPermissionPaying = user.permissions.includes('admin') ? true : user.paying ? true : false
+                        setIsPayingPermission(isPermissionPaying)
+                    } else setUserData(null);
                 }
             } catch (error) {
                 localStorage.setItem('token', '')
@@ -93,6 +103,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             if (data.success) {
                 const { token } = data.user
                 setUserData(data.user)
+                console.log(data.user.paying)
+
+                const isPermissionPaying = data.user.permissions.includes('admin') ? true : data.user.paying ? true : false
+                setIsPayingPermission(isPermissionPaying)
 
                 localStorage.setItem('token', token)
                 api.defaults.headers.Authorization = `Bearer ${token}`
@@ -185,7 +199,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                 alertData,
                 setAlertData,
                 isAuthenticated: !!userData,
-                logout
+                logout,
+                isPayingPermission
             }}
         >
             {children}
