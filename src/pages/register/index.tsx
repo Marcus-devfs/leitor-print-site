@@ -28,16 +28,6 @@ const Register: React.FC = () => {
 
     const verifyInputs = () => {
 
-        if (!userRegister || typeof userRegister !== 'object') {
-            setAlertData({
-                active: true,
-                title: 'Verifique os dados.',
-                message: 'Dados do usuário inválidos.',
-                type: 'info'
-            })
-            return false
-        }
-
         if (!userRegister.password) {
             setAlertData({
                 active: true,
@@ -48,11 +38,41 @@ const Register: React.FC = () => {
             return false
         }
 
+        if (userRegister.password != userRegister.confirmPassword) {
+            setAlertData({
+                active: true,
+                title: 'Verifique os dados.',
+                message: 'As senhas não são iguais.',
+                type: 'info'
+            })
+            return false
+        }
+
         if (!userRegister.email) {
             setAlertData({
                 active: true,
                 title: 'Verifique os dados.',
                 message: 'Preencha o email corretamente.',
+                type: 'info'
+            })
+            return false
+        }
+
+        if (!userRegister.name) {
+            setAlertData({
+                active: true,
+                title: 'Verifique os dados.',
+                message: 'Preencha o nome corretamente.',
+                type: 'info'
+            })
+            return false
+        }
+
+        if (!userRegister.name) {
+            setAlertData({
+                active: true,
+                title: 'Verifique os dados.',
+                message: 'Preencha o nome corretamente.',
                 type: 'info'
             })
             return false
@@ -70,51 +90,55 @@ const Register: React.FC = () => {
     }
 
     const handleCreate = async () => {
-        setLoading(true)
-        try {
-            const response = await fetch('/api/user/create/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userData: userRegister } as Record<string, unknown>)
-            });
+        if (verifyInputs()) {
 
-            if (!response.ok) {
-                setAlertData({
-                    active: true,
-                    title: 'Ocorreu um erro.',
-                    message: 'Erro ao criar o usuário',
-                    type: 'error'
-                })
-                return
+
+            setLoading(true)
+            try {
+                const response = await fetch('/api/user/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userData: userRegister } as Record<string, unknown>)
+                });
+
+                if (!response.ok) {
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro.',
+                        message: 'Erro ao criar o usuário',
+                        type: 'error'
+                    })
+                    return
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    setAlertData({
+                        active: true,
+                        title: 'Tudo Certo!',
+                        message: 'Cadastro realizado com sucesso!',
+                        type: 'success'
+                    })
+
+                    return router.push(`/authentication`);
+                } else {
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro.',
+                        message: 'Erro ao criar o usuário',
+                        type: 'error'
+                    })
+                    return
+                }
+            } catch (error) {
+                console.error('Erro ao verificar o usuário:', error);
+                return error
+            } finally {
+                setLoading(false)
             }
-
-            const data = await response.json();
-
-            if (data.success) {
-                setAlertData({
-                    active: true,
-                    title: 'Tudo Certo!',
-                    message: 'Cadastro realizado com sucesso!',
-                    type: 'success'
-                })
-
-                return router.push(`/authentication`);
-            } else {
-                setAlertData({
-                    active: true,
-                    title: 'Ocorreu um erro.',
-                    message: 'Erro ao criar o usuário',
-                    type: 'error'
-                })
-                return
-            }
-        } catch (error) {
-            console.error('Erro ao verificar o usuário:', error);
-            return error
-        } finally {
-            setLoading(false)
         }
     }
 
@@ -220,8 +244,8 @@ const Register: React.FC = () => {
                             </form>
                         </div>
                         <div className="flex gap-2 justify-center mt-3">
-                        <Button secondary text="Fazer Login" onClick={() => router.push(`/authentication`)} />
-                        <Button arrowIcon={!loading} isLoading={loading} text="Cadastrar" onClick={() => handleCreate()} />
+                            <Button secondary text="Fazer Login" onClick={() => router.push(`/authentication`)} />
+                            <Button arrowIcon={!loading} isLoading={loading} text="Cadastrar" onClick={() => handleCreate()} />
                         </div>
                     </Card>
 

@@ -5,8 +5,7 @@ import { ReportDashboard } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 import CardItem from "./component/CardItem"
-import { TablePlataform } from "./component/TablePlataform"
-import { TableInfluencerDetails } from "./component/TableInfluencer"
+import TablePlataform from "./component/TablePlataform"
 
 const Dashboard: React.FC = () => {
     const { userData } = useAppContext()
@@ -190,27 +189,127 @@ const Dashboard: React.FC = () => {
                 </div>
 
 
-                <div>
-                    {report[graphSelected]?.table_v1?.data?.length > 0 ?
+                {graphSelected === 'todos' ? (
+                    <div className="w-full flex flex-col gap-12">
+                        <div className="w-full flex flex-col gap-2">
+                            <div className="w-full px-4 py-4 bg-gray-400">
+                                <h2 className="text-white text-lg">Vídeos Curtos</h2>
+                            </div>
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.video_curto?.table_v1?.title}</h1>
+                                {report.video_curto?.table_v1?.data?.length > 0 ?
+                                    <TablePlataform data={report.video_curto?.table_v1?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.video_curto?.table_v2?.title}</h1>
+                                {report.video_curto?.table_v2?.data?.length > 0 ?
+                                    <TablePlataform data={report.video_curto?.table_v2?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+                        </div>
+
+
+                        <div className="w-full flex flex-col gap-2">
+                            <div className="w-full px-4 py-4 bg-gray-400">
+                                <h2 className="text-white text-lg">Stories</h2>
+                            </div>
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.stories?.table_v1?.title}</h1>
+                                {report.stories?.table_v1?.data?.length > 0 ?
+                                    <TablePlataform data={report.stories?.table_v1?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.stories?.table_v2?.title}</h1>
+                                {report.stories?.table_v2?.data?.length > 0 ?
+                                    <TablePlataform data={report.stories?.table_v2?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div className="w-full flex flex-col gap-2">
+
+                            <div className="w-full px-4 py-4 bg-gray-400">
+                                <h2 className="text-white text-lg">Vídeo Longo</h2>
+                            </div>
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.video_longo?.table_v1?.title}</h1>
+                                {report.video_longo?.table_v1?.data?.length > 0 ?
+                                    <TablePlataform data={report.video_longo?.table_v1?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.video_longo?.table_v2?.title}</h1>
+                                {report.video_longo?.table_v2?.data?.length > 0 ?
+                                    <TablePlataform data={report.video_longo?.table_v2?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div className="w-full flex flex-col gap-2">
+
+                            <div className="w-full px-4 py-4 bg-gray-400">
+                                <h2 className="text-white text-lg">Outras Plataformas</h2>
+                            </div>
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.outras_plataformas?.table_v1?.title}</h1>
+                                {report.outras_plataformas?.table_v1?.data?.length > 0 ?
+                                    <TablePlataform data={report.outras_plataformas?.table_v1?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+
+                            <div className="flex gap-2 flex-col">
+                                <h1 className="text-primary text-lg mt-4">{report.outras_plataformas?.table_v2?.title}</h1>
+                                {report.outras_plataformas?.table_v2?.data?.length > 0 ?
+                                    <TablePlataform data={report.outras_plataformas?.table_v2?.data} />
+                                    :
+                                    <span className="text-gray-500">Não possúi dados.</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+
                         <div className="flex gap-2 flex-col">
                             <h1 className="text-primary text-lg mt-4">{report[graphSelected]?.table_v1?.title}</h1>
-                            <TablePlataform data={report[graphSelected]?.table_v1?.data} />
+                            {report[graphSelected]?.table_v1?.data?.length > 0 ?
+                                <TablePlataform data={report[graphSelected]?.table_v1?.data} />
+                                :
+                                <span className="text-gray-500">Não possúi dados.</span>
+                            }
                         </div>
-                        :
-                        <span className="text-gray-500">Não possúi dados.</span>
-                    }
 
-                    {report[graphSelected]?.table_v2?.data?.length > 0 ?
                         <div className="flex gap-2 flex-col">
                             <h1 className="text-primary text-lg mt-4">{report[graphSelected]?.table_v2?.title}</h1>
-                            <TablePlataform data={report[graphSelected]?.table_v2?.data} />
+                            {report[graphSelected]?.table_v2?.data?.length > 0 ?
+                                <TablePlataform data={report[graphSelected]?.table_v2?.data} />
+                                :
+                                <span className="text-gray-500">Não possúi dados.</span>
+                            }
                         </div>
-                        :
-                        <span className="text-gray-500">Não possúi dados.</span>
-                    }
-                </div>
-            </div>
-        </div>
+                    </div >
+                )}
+            </div >
+        </div >
     )
 
 }

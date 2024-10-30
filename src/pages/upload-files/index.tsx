@@ -390,6 +390,21 @@ const UploadFiles: React.FC = () => {
                 success = false
                 break
             }
+
+
+            if (!file.followersNumber) {
+                setAlertData({
+                    active: true,
+                    title: 'Você tem arquivos sem preenchimento!',
+                    message: `Por favor, analíse o arquivo: (${file.file.name}). Está sem número de seguidores preenchidos.`,
+                    type: 'info'
+                })
+
+                setFileSelected(file.fileId)
+                setShowFormFiles(true)
+                success = false
+                break
+            }
         }
 
         return success
