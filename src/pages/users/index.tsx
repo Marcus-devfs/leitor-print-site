@@ -1,24 +1,28 @@
 import { Body, SectionHeader } from "@/components"
-import { Table, TableDropdownMenu, TableSearchInput } from "@/components/table"
+import { Table, TableDropdownMenu, TablePagination, TableSearchInput } from "@/components/table"
 import { useAppContext } from "@/context/AppContext"
 import { api } from "@/helpers/api"
 import { UserDataObject } from "@/helpers/types"
+import { AxiosResponse } from "axios"
 import { randomUUID } from "crypto"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 
 const Users: React.FC = () => {
     const [users, setUsers] = useState<UserDataObject[]>([])
+    const [selectedData, setSelectedData] = useState<string[]>([])
     const [searchText, setSearchText] = useState<string>('')
-    const { setAlertData } = useAppContext()
-
+    const { setAlertData, setLoading } = useAppContext()
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const itemsPerPage = 10;
     const router = useRouter()
 
 
     const getUsers = async () => {
         try {
-            const response = await api.get(`/user/list`);
-            const { success, users } = response?.data
+            const response = await api.get(`/user/list?page=${currentPage}&limit=${itemsPerPage}&search=${searchText}`);
+            const { success, users, total } = response?.data
             if (!success) {
                 setAlertData({
                     active: true,
@@ -30,6 +34,7 @@ const Users: React.FC = () => {
             }
 
             setUsers(users);
+            setTotalPages(Math.ceil(total / itemsPerPage));
 
         } catch (error) {
             console.log(error)
@@ -40,11 +45,89 @@ const Users: React.FC = () => {
         getUsers()
     }, [])
 
+
+
+    const handleDeleteUser = async () => {
+        if (selectedData?.length > 0) {
+            try {
+                setLoading(true)
+                let success = true
+                for (let id of selectedData) {
+                    const response: AxiosResponse<any> = await api.delete(`/user/delete/${id}`)
+                    const { data } = response
+                    if (!data?.success) {
+                        success = false
+                    }
+
+                }
+                if (!success) {
+
+                    setAlertData({
+                        active: true,
+                        title: 'Ocorreu um erro',
+                        message: 'Tivemos alguns problemas ao excluír o usuário. Tente novamente mais tarde ou contato o suporte.',
+                        type: 'error'
+                    })
+
+                    return false
+                }
+
+
+                setAlertData({
+                    active: true,
+                    title: 'Tudo certo!',
+                    message: 'Usuários excluídos.',
+                    type: 'success'
+                })
+
+                await getUsers()
+
+                setSelectedData([])
+            } catch (error) {
+                console.log(error)
+                return error
+            } finally {
+                setLoading(false)
+            }
+        } else {
+            setAlertData({
+                active: true,
+                title: 'Atenção!',
+                message: 'Selecione pelo menos um usuário que será excluído.',
+                type: 'info'
+            })
+        }
+    }
+
     const dropdownItems = [
         { label: 'Novo', href: '/users/new' },
-        { label: 'Desativar', href: '#' },
-        { label: 'Excluir Usuario', href: '#' },
+        { label: 'Excluir Usuario', href: '#', onclick: () => handleDeleteUser() },
     ];
+
+
+    const handleCheckboxChange = useCallback((id: string, active: boolean) => {
+        setSelectedData(prevSelected => {
+            if (active) {
+                return [...prevSelected, id]
+            } else {
+                return prevSelected.filter(selectedId => selectedId !== id)
+            }
+        });
+    }, []);
+
+
+    const handleAllCheckboxSelected = useCallback(() => {
+        const allSelected = selectedData?.length == users?.length
+        if (allSelected) {
+            setSelectedData([])
+        } else {
+            setSelectedData(users.map(item => item._id || ''));
+        }
+    }, [users, selectedData]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
 
     return (
@@ -67,13 +150,12 @@ const Users: React.FC = () => {
                                     <input
                                         id="checkbox-all-search"
                                         type="checkbox"
-                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2  dark:border-gray-600"
+                                        checked={selectedData.length === users.length && users.length > 0}
+                                        onChange={handleAllCheckboxSelected}
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:border-gray-600"
                                     />
-                                    <label
-                                        htmlFor="checkbox-all-search"
-                                        className="sr-only"
-                                    >
-                                        checkbox
+                                    <label htmlFor="checkbox-all-search" className="sr-only">
+                                        Selecionar todos
                                     </label>
                                 </div>
                             </th>
@@ -90,13 +172,20 @@ const Users: React.FC = () => {
                     </thead>
                     <tbody>
                         {users.length > 0 ? users.map((item, index) => {
+                            const userId = item?._id || ''
+                            const selected = selectedData?.includes(userId)
                             return (
-                                <tr key={index} className="bg-white border-b  hover:bg-gray-50 dark:hover:bg-gray-200">
+                                <tr key={index} className="bg-white border-b  hover:bg-gray-50 dark:hover:bg-gray-200"
+                                    style={{ backgroundColor: selected ? "#FFE5B5" : "#fff" }}>
                                     <td className="w-4 p-4">
                                         <div className="flex items-center">
                                             <input
                                                 id="checkbox-table-search-2"
                                                 type="checkbox"
+                                                checked={selectedData?.includes(userId)}
+                                                onChange={(e) => {
+                                                    handleCheckboxChange(userId, e.target.checked)
+                                                }}
                                                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2  dark:border-gray-600"
                                             />
                                             <label
@@ -146,6 +235,13 @@ const Users: React.FC = () => {
                             <span>Não encontramos usuários cadastrados</span>}
                     </tbody>
                 </Table>
+
+                <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </Body>
     )

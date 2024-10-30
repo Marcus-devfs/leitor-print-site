@@ -1,5 +1,15 @@
 export interface UserDataObject {
-    _id?: string
+    _id: string | null
+    name: string | null
+    email: string | null
+    phone: string | null
+    password?: string | null
+    confirmPassword?: string | null
+    permissions: string[]
+}
+
+export interface NewUserDataObject {
+    _id?: string | null
     name: string | null
     email: string | null
     phone: string | null

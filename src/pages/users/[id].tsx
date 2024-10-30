@@ -2,7 +2,7 @@ import { Body, SectionHeader } from "@/components"
 import { Button } from "@/components/button/Button"
 import { useAppContext } from "@/context/AppContext"
 import { api } from "@/helpers/api"
-import { UserDataObject } from "@/helpers/types"
+import { NewUserDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
@@ -12,7 +12,7 @@ interface UserData {
 }
 
 const UserEdit: React.FC = () => {
-    const [userData, setUserData] = useState<UserDataObject>({
+    const [userData, setUserData] = useState<NewUserDataObject>({
         name: '',
         email: '',
         phone: '',
