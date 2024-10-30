@@ -6,11 +6,6 @@ import { NewUserDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
-
-interface UserData {
-    permissions: string[]
-}
-
 const UserEdit: React.FC = () => {
     const [userData, setUserData] = useState<NewUserDataObject>({
         name: '',

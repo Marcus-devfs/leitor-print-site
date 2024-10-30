@@ -3,8 +3,7 @@ import { Button } from "@/components/button/Button"
 import { Card, CardTitle, CardText, CardButton } from "@/components/card"
 import { Divider } from "@/components/divider/Divider"
 import { useAppContext } from "@/context/AppContext"
-import { api } from "@/helpers/api"
-import { UserDataObject } from "@/helpers/types"
+import { NewUserDataObject } from "@/helpers/types"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
 
@@ -16,7 +15,7 @@ interface UserRegisterObject {
 const Register: React.FC = () => {
 
     const { loading, setLoading, setAlertData } = useAppContext()
-    const [userRegister, setUserRegister] = useState<UserDataObject>({
+    const [userRegister, setUserRegister] = useState<NewUserDataObject>({
         name: '',
         email: '',
         phone: '',
