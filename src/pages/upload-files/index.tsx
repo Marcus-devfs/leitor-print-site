@@ -290,8 +290,8 @@ const UploadFiles: React.FC = () => {
 
     const handleSendPlanilhaEmail = async (textDataIds: any) => {
         try {
-            const response: AxiosResponse<any> = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/filesData/send-planilha-email`,
+            const response: AxiosResponse<any> = await api.post(
+                `/filesData/send-planilha-email`,
                 { textDataIds }, {
                 onUploadProgress: (event: AxiosProgressEvent) => {
                     if (event.total) {
