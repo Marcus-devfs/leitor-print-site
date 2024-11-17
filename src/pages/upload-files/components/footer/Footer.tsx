@@ -78,10 +78,11 @@ const Footer: React.FC<FormsProps> = ({
                 </Tooltip>
             }
             {!showCheckboxFile &&
-                <Tooltip title="Quando o print for quebrado, agrupe os arquivos para unir as informações em uma mesma linha de excel.">
+                <Tooltip title={!showGroupFiles ?
+                     `Quando o print for quebrado, agrupe os arquivos para unir as informações em uma mesma linha de excel.` : ''}>
 
                     <div className="flex items-center justify-center gap-3 border py-2.5 px-5 rounded-lg cursor-pointer" onClick={() => setShowGroupFiles(!showGroupFiles)}>
-                        <span className="text-white">{showGroupFiles ? 'Cancelar Agrupamento' : 'Agrupar Arquivos'}</span>
+                        <span className="text-white">{showGroupFiles ? 'Finalizar Agrupamento' : 'Agrupar Arquivos'}</span>
                         {showGroupFiles ?
                             (
                                 <svg
@@ -110,7 +111,7 @@ const Footer: React.FC<FormsProps> = ({
 
             {(!showCheckboxFile && showGroupFiles) && <Button text="Agrupar" isLoading={loading} arrowIcon onClick={handleGroupFiles} />}
             {(!showGroupFiles && !showCheckboxFile) && <Button deleteButton text="Cancelar" isLoading={loading} onClick={handleCancel} />}
-            {(!showGroupFiles && !showCheckboxFile) && <Button text="Salvar Todos os Arquivos" isLoading={loading} arrowIcon onClick={handleUpload} />}
+            {(!showGroupFiles && !showCheckboxFile) && <Button text="Enviar Arquivos" isLoading={loading} arrowIcon onClick={handleUpload} />}
         </div>
     );
 };

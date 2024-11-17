@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from "react"
 
 interface TooltipProps {
-    title: string,
+    title?: string,
     children: ReactNode
 }
 
@@ -10,7 +10,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ title, children }) => {
 
     return (
         <div
-            className="relative inline-block"
+            className={`relative inline-block`}
             onMouseEnter={() => setIsVisible(true)}
             onMouseLeave={() => setIsVisible(false)}
         >
@@ -18,7 +18,7 @@ export const Tooltip: React.FC<TooltipProps> = ({ title, children }) => {
 
             {/* Tooltip Container */}
             <div
-                className={`absolute z-10 inline-block px-2 py-2 text-white bg-gray-400 rounded-lg shadow-sm transition-opacity duration-300 ${
+                className={`${!title && 'hidden'} absolute z-10 inline-block px-2 py-2 text-white bg-gray-400 rounded-lg shadow-sm transition-opacity duration-300 ${
                     isVisible ? 'opacity-100 visible' : 'opacity-0 invisible'
                 }`}
                 style={{ bottom: '120%', left: '50%', minWidth: 200, transform: 'translateX(-50%)' }}

@@ -207,6 +207,10 @@ const UploadFiles: React.FC = () => {
             print_cortado: false
         };
 
+        // Const específica para prints de stories cortados ao meio, para defini-los por posição e identifica-los como story.
+        const positionStories = result.indexOf("visualizacoes");
+        const storyPartsEspecificsVisualization = result[positionStories + 2].includes('interacoes')
+
         // Validação dos dados de acordo com texto extraído
         if (result.includes('insights') && result.includes('do') && result.includes('reel') || result.includes('interacoes') && result.includes('do') && result.includes('reel')) {
             extractedInfo.Plataforma = 'Instagram';
@@ -218,7 +222,11 @@ const UploadFiles: React.FC = () => {
                 extractedInfo.print_cortado = true
             }
             // Extrair outros dados específicos do Reels
-        } else if (result.includes('story') || result.includes('interacoes') && result.includes('com') && result.includes('stories') || result.includes('proximo') && result.includes('story') || result.includes('toques') && result.includes('em') && result.includes('figurinhas')
+        } else if (storyPartsEspecificsVisualization ||
+            result.includes('story') ||
+            (result.includes('interacoes') && result.includes('com') && result.includes('stories')) ||
+            (result.includes('proximo') && result.includes('story')) ||
+            (result.includes('toques') && result.includes('em') && result.includes('figurinhas'))
         ) {
             extractedInfo.Plataforma = 'Instagram';
             extractedInfo.Formato = 'Story';
@@ -764,15 +772,20 @@ const UploadFiles: React.FC = () => {
                     }}
                 />
             ) : (
-                <div className={`flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20 ${(loadingData || showNewFiles) && 'opacity-25'}`}>
-                    <span className="fw-bold text-gray-800 text-lg pb-4">Especificações</span>
-                    <li className="text-slate-600">Resolução</li>
-                    <li className="text-slate-600">Prints estendidos</li>
-                    <li className="text-slate-600">XPTO</li>
+                <div className={`flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20 max-w-96 ${(loadingData || showNewFiles) && 'opacity-25'}`}>
+                    <span className="fw-bold text-gray-800 text-lg pb-4">Passo a Passo</span>
+                    <li className="text-slate-600">Salve os prints das publicações em seu computador</li>
+                    <li className="text-slate-600">Suba os prints para a ferramenta</li>
+                    <li className="text-slate-600">A ferramenta aceita prints estendidos (quando pegamos todas as informações através de print scroll) ou prints "quebrados" quando os resultados da mesma publicação está em mais de um print</li>
+                    <li className="text-slate-600">Junte prints "quebrados" das mesma publicações pelo agrupamento</li>
+                    <li className="text-slate-600">Adicione o influenciador e número de seguidores nos prints</li>
+                    <li className="text-slate-600">Você pode adicionar vários de uma vez pelo botão "Selecionar Múltiplos"</li>
+                    <li className="text-slate-600">Depois disso é só enviar!</li>
+
                 </div>
             )}
 
-            {(newFiles.length > 0 && !loadingData) && 
+            {(newFiles.length > 0 && !loadingData) &&
                 <div className="flex w-full justify-center items-center">
                     <Footer
                         setShowCheckboxFile={setShowCheckboxFile}

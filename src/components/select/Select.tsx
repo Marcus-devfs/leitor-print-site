@@ -67,7 +67,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             </div>
 
             {isOpen && (
-                <div className="absolute right-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-full">
+                <div className="absolute right-0 bg-white divide-y divide-gray-100 rounded-lg shadow w-full">
                     <div className="py-2 text-sm text-gray-700">
                         {combinedOptions.map(({ label, value }) => (
                             <span

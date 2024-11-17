@@ -109,7 +109,7 @@ const Dashboard: React.FC = () => {
 
                     <div className="flex gap-2 w-full">
                         <div className="bg-white px-4 py-4 flex w-full flex-col items-center justify-center rounded-lg border">
-                            <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Seguidores Totais</h2>
+                            <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Volume Máximo de Seguidores</h2>
                             <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatMilhares(reportData.seguidores_totais)}</h2>
 
                             <div className="px-2 py-2 flex w-full justify-center items-center gap-2">
@@ -142,7 +142,7 @@ const Dashboard: React.FC = () => {
                                 <path d="M7 6a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v5a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4V6Z" />
                             </svg>
 
-                            <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Alcance Total</h2>
+                            <h2 className="text-gray-700 font-light text-md whitespace-nowrap">Maior Alcance das Entregas</h2>
                             <h2 className="text-gray-700 font-bold text-2xl whitespace-nowrap">{formatMilhares(reportData.alcance_total)}</h2>
 
                         </div>

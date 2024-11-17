@@ -109,7 +109,7 @@ const FormDetailsFile: React.FC<FormsProps> = ({
 
                 <div className="mb-3">
                     <label htmlFor="campaign" className="block mb-2 text-sm font-medium text-gray-900">
-                        Ação / campanha*
+                        Ação / campanha
                     </label>
                     <input
                         type="text"
@@ -139,7 +139,7 @@ const FormDetailsFile: React.FC<FormsProps> = ({
 
                 <div className="mb-3 items-center">
                     <label htmlFor="foodFormat" className="block mb-2 text-sm font-medium text-gray-900">
-                        Categoria*
+                        Categoria
                     </label>
                     <Dropdown
                         title="Selecione uma opção"
