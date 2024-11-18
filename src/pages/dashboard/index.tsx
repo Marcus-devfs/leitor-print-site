@@ -200,7 +200,7 @@ const Dashboard: React.FC = () => {
                                     {report.video_curto?.table_v1?.data?.length > 0 ?
                                         <TablePlataform data={report.video_curto?.table_v1?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
 
@@ -209,7 +209,7 @@ const Dashboard: React.FC = () => {
                                     {report.video_curto?.table_v2?.data?.length > 0 ?
                                         <TablePlataform data={report.video_curto?.table_v2?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
                             </div>
@@ -224,7 +224,7 @@ const Dashboard: React.FC = () => {
                                     {report.stories?.table_v1?.data?.length > 0 ?
                                         <TablePlataform data={report.stories?.table_v1?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
 
@@ -233,7 +233,7 @@ const Dashboard: React.FC = () => {
                                     {report.stories?.table_v2?.data?.length > 0 ?
                                         <TablePlataform data={report.stories?.table_v2?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
                             </div>
@@ -248,7 +248,7 @@ const Dashboard: React.FC = () => {
                                     {report.video_longo?.table_v1?.data?.length > 0 ?
                                         <TablePlataform data={report.video_longo?.table_v1?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
 
@@ -257,7 +257,7 @@ const Dashboard: React.FC = () => {
                                     {report.video_longo?.table_v2?.data?.length > 0 ?
                                         <TablePlataform data={report.video_longo?.table_v2?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
                             </div>
@@ -272,7 +272,7 @@ const Dashboard: React.FC = () => {
                                     {report.outras_plataformas?.table_v1?.data?.length > 0 ?
                                         <TablePlataform data={report.outras_plataformas?.table_v1?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
 
@@ -281,7 +281,7 @@ const Dashboard: React.FC = () => {
                                     {report.outras_plataformas?.table_v2?.data?.length > 0 ?
                                         <TablePlataform data={report.outras_plataformas?.table_v2?.data} />
                                         :
-                                        <span className="text-gray-500">Não possúi dados.</span>
+                                        <span className="text-gray-500">Não existem dados.</span>
                                     }
                                 </div>
                             </div>
@@ -294,7 +294,7 @@ const Dashboard: React.FC = () => {
                                 {report[graphSelected]?.table_v1?.data?.length > 0 ?
                                     <TablePlataform data={report[graphSelected]?.table_v1?.data} />
                                     :
-                                    <span className="text-gray-500">Não possúi dados.</span>
+                                    <span className="text-gray-500">Não existem dados.</span>
                                 }
                             </div>
 
@@ -303,7 +303,7 @@ const Dashboard: React.FC = () => {
                                 {report[graphSelected]?.table_v2?.data?.length > 0 ?
                                     <TablePlataform data={report[graphSelected]?.table_v2?.data} />
                                     :
-                                    <span className="text-gray-500">Não possúi dados.</span>
+                                    <span className="text-gray-500">Não existem dados.</span>
                                 }
                             </div>
                         </div >
