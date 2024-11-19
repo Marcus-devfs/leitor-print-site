@@ -154,7 +154,6 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                         Número de seguidores*
                     </label>
                     <input
-                        type="number"
                         name="followersNumber"
                         value={fileSelected?.followersNumber}
                         onChange={onChange}

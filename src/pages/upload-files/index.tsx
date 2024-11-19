@@ -481,9 +481,19 @@ const UploadFiles: React.FC = () => {
                         }
                     }
 
+                    if (!ok) {
+                        setAlertData({
+                            active: true,
+                            title: 'Ocorreu um erro ao enviar arquivos.',
+                            message: 'Tente novamente ou entre em contato conosco para obter suporte.',
+                            type: 'error'
+                        })
+                        return false
+                    }
+
                     const sendEmail = await handleSendPlanilhaEmail(textDataIds)
 
-                    if (ok && sendEmail) {
+                    if (sendEmail) {
                         setAlertData({
                             active: true,
                             title: 'Arquivos enviados e processados!',
@@ -500,7 +510,7 @@ const UploadFiles: React.FC = () => {
                             message: 'Tente novamente ou entre em contato conosco para obter suporte.',
                             type: 'error'
                         })
-                        return true
+                        return false
                     }
                 } else {
                     return false
@@ -547,6 +557,15 @@ const UploadFiles: React.FC = () => {
                 });
                 setNewFiles(updatedFiles);
                 // setShowGroupFiles(false)
+
+
+                setAlertData({
+                    active: true,
+                    title: 'Agrupamento Salvo!',
+                    message: 'Os arquivos foram agrupados na mesma linha. \n (O grupo se diferencia por cor)',
+                    type: 'success'
+                });
+
             } else {
                 setAlertData({
                     active: true,
@@ -772,6 +791,7 @@ const UploadFiles: React.FC = () => {
                     }}
                 />
             ) : (
+                newFiles.length == 0 &&
                 <div className={`flex flex-col gap-2 px-7 py-8 rounder-pill bg-white shadow rounded-lg absolute right-0 top-20 max-w-96 ${(loadingData || showNewFiles) && 'opacity-25'}`}>
                     <span className="fw-bold text-gray-800 text-lg pb-4">Passo a Passo</span>
                     <li className="text-slate-600">Salve os prints das publicações em seu computador</li>
@@ -789,6 +809,7 @@ const UploadFiles: React.FC = () => {
                 <div className="flex w-full justify-center items-center">
                     <Footer
                         setShowCheckboxFile={setShowCheckboxFile}
+                        showFormFiles={showFormFiles}
                         showCheckboxFile={showCheckboxFile}
                         handleUpload={async () => {
                             if (checkGroupValidation()) {

@@ -8,6 +8,7 @@ import React, { SetStateAction } from "react";
 interface FormsProps {
     handleUpload: () => void
     handleCancel: () => void
+    showFormFiles: boolean;
     setShowNewFiles: React.Dispatch<SetStateAction<boolean>>
     setShowGroupFiles: React.Dispatch<SetStateAction<boolean>>
     setShowCheckboxFile: React.Dispatch<SetStateAction<boolean>>
@@ -20,6 +21,7 @@ interface FormsProps {
 
 const Footer: React.FC<FormsProps> = ({
     handleUpload,
+    showFormFiles,
     handleCancel,
     setShowNewFiles,
     setShowGroupFiles,
@@ -32,9 +34,10 @@ const Footer: React.FC<FormsProps> = ({
     const { loading } = useAppContext()
 
     return (
-        <div className="flex gap-2 justify-center items-center px-12 py-2 rounded-pill bg-gray-700 shadow rounded-lg fixed bottom-4">
+        <div className={`flex transition-all gap-2 justify-center items-center px-12 py-2 rounded-pill bg-gray-700 shadow rounded-lg fixed ${showFormFiles && 'left-20'}  bottom-4`}>
+            
             {(!showCheckboxFile && !showGroupFiles) && <div className="flex items-center justify-center gap-3 border py-2.5 px-5 rounded-lg cursor-pointer" onClick={() => setShowNewFiles(true)}>
-                <span className="text-white">Carregar mais arquivos</span>
+               {!showFormFiles && <span className="text-white">Carregar mais arquivos</span>}
                 <img
                     src="./icons/upload-icon.png"
                     className="h-6 h-6"
@@ -51,7 +54,7 @@ const Footer: React.FC<FormsProps> = ({
                             setShowCheckboxFile(!showCheckboxFile)
                             setShowFormFiles(!showCheckboxFile)
                         }}>
-                        <span className="text-white">{showCheckboxFile ? 'Cancelar Multiplos' : 'Selecionar Multiplos'}</span>
+                        {!showFormFiles && <span className="text-white">{showCheckboxFile ? 'Cancelar Multiplos' : 'Selecionar Multiplos'}</span>}
                         {!showCheckboxFile ?
                             <img
                                 src="./icons/checkbox.png"
@@ -82,7 +85,7 @@ const Footer: React.FC<FormsProps> = ({
                      `Quando o print for quebrado, agrupe os arquivos para unir as informações em uma mesma linha de excel.` : ''}>
 
                     <div className="flex items-center justify-center gap-3 border py-2.5 px-5 rounded-lg cursor-pointer" onClick={() => setShowGroupFiles(!showGroupFiles)}>
-                        <span className="text-white">{showGroupFiles ? 'Finalizar Agrupamento' : 'Agrupar Arquivos'}</span>
+                    {!showFormFiles &&  <span className="text-white">{showGroupFiles ? 'Finalizar Agrupamento' : 'Agrupar Arquivos'}</span>}
                         {showGroupFiles ?
                             (
                                 <svg
