@@ -64,7 +64,7 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                 <span className="text-xs text-gray-700">{fileSelected?.file.name}</span>
             </div>
 
-            <div className="flex flex-col px-7 py-4 gap-2 overflow-y-auto max-h-[70vh]">
+            <div className="flex flex-col px-7 py-4 gap-2 overflow-y-auto max-h-[63vh] lg:max-h-[63vh]">
 
                 <div className="mb-3">
                     <label htmlFor="influencerEmail" className="block mb-2 text-sm font-medium text-gray-900">
@@ -163,7 +163,7 @@ const FormDetailsFile: React.FC<FormsProps> = ({
                     />
                 </div>
 
-                <div className="flex w-full justify-end py-2 gap-2">
+                <div className="sticky bottom-[-20px] flex w-full justify-end py-2 gap-2 bg-white">
                     {showCheckboxFile && <Button text="Salvar" isLoading={loading} onClick={handleCancel} />}
                     <Button secondary text="Fechar" isLoading={loading} onClick={handleCancel} />
                 </div>
