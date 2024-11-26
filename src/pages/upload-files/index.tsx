@@ -142,49 +142,6 @@ const UploadFiles: React.FC = () => {
         return { processedFiles, isHavePrintCortado };
     };
 
-    const handleAddFile = async (files: File[]) => {
-        setLoading(true)
-        try {
-
-            const fileWithPreview = files.map(file => ({
-                file,
-                fileId: generateRandomId(),
-                preview: URL.createObjectURL(file),
-                selected: false,
-                influencer: '',
-                campaign: '',
-                followersNumber: '',
-                plataform: '',
-                format: '',
-                type: '',
-                marca_cliente: '',
-                groupKey: '',
-                groupKeyColor: '',
-                print_cortado: false
-            }))
-
-            const { processedFiles, isHavePrintCortado } = await handleProcessFiles(fileWithPreview);
-
-            if (isHavePrintCortado) {
-                setAlertData({
-                    active: true,
-                    title: 'Atenção!',
-                    message: 'Alguns arquivos selecionados, não possuem a imagem completa, e possívelmente são prints "cortados". Por favor, ultilize o agrupamento de arquivos, para juntar os arquivos em uma mesma linha de excel.',
-                    type: 'info'
-                });
-            }
-
-            // Atualizar o estado de newFiles com os arquivos processados
-            setNewFiles(prevFiles => [...prevFiles, ...processedFiles]);
-            setShowNewFiles(false);
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
-        }
-    };
-
     const processExtractedText = async (text: string) => {
         // Transformar o texto em um array de palavras, similar ao código Python
         const result = text.toLowerCase().split(/\s+/).map(word => removeAccents(word));
@@ -209,7 +166,9 @@ const UploadFiles: React.FC = () => {
 
         // Const específica para prints de stories cortados ao meio, para defini-los por posição e identifica-los como story.
         const positionStories = result.indexOf("visualizacoes");
+        const positionAlcanceStories = result.indexOf("alcance");
         const storyPartsEspecificsVisualization = result[positionStories + 2].includes('interacoes')
+        const storyPartsEspecificsAlcance = result[positionAlcanceStories + 3].includes('contas') && result[positionAlcanceStories + 4].includes('alcancadas')
 
         // Validação dos dados de acordo com texto extraído
         if (result.includes('insights') && result.includes('do') && result.includes('reel') || result.includes('interacoes') && result.includes('do') && result.includes('reel')) {
@@ -222,7 +181,7 @@ const UploadFiles: React.FC = () => {
                 extractedInfo.print_cortado = true
             }
             // Extrair outros dados específicos do Reels
-        } else if (storyPartsEspecificsVisualization ||
+        } else if (storyPartsEspecificsVisualization || storyPartsEspecificsAlcance ||
             result.includes('story') ||
             (result.includes('interacoes') && result.includes('com') && result.includes('stories')) ||
             (result.includes('proximo') && result.includes('story')) ||
@@ -336,6 +295,49 @@ const UploadFiles: React.FC = () => {
             return error
         }
     }
+
+    const handleAddFile = async (files: File[]) => {
+        setLoading(true)
+        try {
+
+            const fileWithPreview = files.map(file => ({
+                file,
+                fileId: generateRandomId(),
+                preview: URL.createObjectURL(file),
+                selected: false,
+                influencer: '',
+                campaign: '',
+                followersNumber: '',
+                plataform: '',
+                format: '',
+                type: '',
+                marca_cliente: '',
+                groupKey: '',
+                groupKeyColor: '',
+                print_cortado: false
+            }))
+
+            const { processedFiles, isHavePrintCortado } = await handleProcessFiles(fileWithPreview);
+
+            if (isHavePrintCortado) {
+                setAlertData({
+                    active: true,
+                    title: 'Atenção!',
+                    message: 'Alguns arquivos selecionados, não possuem a imagem completa, e possívelmente são prints "cortados". Por favor, ultilize o agrupamento de arquivos, para juntar os arquivos em uma mesma linha de excel.',
+                    type: 'info'
+                });
+            }
+
+            // Atualizar o estado de newFiles com os arquivos processados
+            setNewFiles(prevFiles => [...prevFiles, ...processedFiles]);
+            setShowNewFiles(false);
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    };
 
 
     const checkGroupValidation = () => {
