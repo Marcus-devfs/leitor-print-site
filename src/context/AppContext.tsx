@@ -59,25 +59,43 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
                 if (token != 'null') {
                     api.defaults.headers.authorization = `Bearer ${token}`
 
-                    const response = await api.post('/user/loginbytoken')
-                    const { success } = response.data
+                    // Timeout configurado
+                    const TIMEOUT_MS = 5000; // 10 segundos
+                    const timeout = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('Timeout: A API demorou muito para responder')), TIMEOUT_MS)
+                    );
+
+                    // Combina a chamada da API com o timeout
+                    const response: any = await Promise.race([
+                        api.post('/user/loginbytoken'),
+                        timeout,
+                    ]);
+
+                    const { success } = response.data;
 
                     if (success) {
                         const { user } = response.data
                         setUserData(response.data.user)
                         console.log(user.paying)
                         console.log(user.permissions)
-                        
+
                         const isPermissionPaying = user.permissions.includes('admin') ? true : user.paying ? true : false
                         setIsPayingPermission(isPermissionPaying)
-                    } else setUserData(null);
+                    } else {
+                        setUserData(null);
+                    }
                 }
-            } catch (error) {
-                localStorage.setItem('token', '')
-                console.log(error)
-                return false
+            } catch (error: any) {
+                localStorage.setItem('token', '');
+                console.error(error);
+                setAlertData({
+                    active: true,
+                    title: 'Erro',
+                    message: error.message || 'Erro ao carregar os dados do usuário.',
+                    type: 'error',
+                });
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         }
         loadUserFromCookies()
