@@ -161,7 +161,7 @@ const UploadFiles: React.FC = () => {
         const extractedInfo: any = {
             Plataforma: null,
             Formato: null,
-            print_cortado: false
+            print_cortado: false 
         };
 
         // Const específica para prints de stories cortados ao meio, para defini-los por posição e identifica-los como story.
