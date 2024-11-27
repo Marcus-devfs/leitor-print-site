@@ -161,7 +161,7 @@ const UploadFiles: React.FC = () => {
         const extractedInfo: any = {
             Plataforma: null,
             Formato: null,
-            print_cortado: false 
+            print_cortado: false
         };
 
         // Const específica para prints de stories cortados ao meio, para defini-los por posição e identifica-los como story.
@@ -542,6 +542,18 @@ const UploadFiles: React.FC = () => {
         return `#${randomColor.padStart(6, '0')}`; // Garante que a cor tenha sempre 6 caracteres
     };
 
+    const handleAllSelected = () => {
+        const filesLenght = newFiles?.length
+        const filesSelectedLenght = newFiles?.filter(file => file.selected)?.length
+
+        const updatedFiles = newFiles.map(file => {
+            const selected = filesLenght !== filesSelectedLenght;
+            return { ...file, selected };
+        });
+
+        setNewFiles(updatedFiles);
+    }
+
     const handleGroupFiles = () => {
         try {
             setLoading(true)
@@ -829,6 +841,7 @@ const UploadFiles: React.FC = () => {
                         setShowFormFiles={setShowFormFiles}
                         showGroupFiles={showGroupFiles}
                         handleGroupFiles={handleGroupFiles}
+                        handleAllSelected={handleAllSelected}
                     />
                 </div>}
 

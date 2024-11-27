@@ -16,6 +16,7 @@ interface FormsProps {
     showCheckboxFile: boolean
     showGroupFiles: boolean
     handleGroupFiles: () => void
+    handleAllSelected: () => void
 }
 
 
@@ -29,15 +30,16 @@ const Footer: React.FC<FormsProps> = ({
     setShowFormFiles,
     showCheckboxFile,
     showGroupFiles,
-    handleGroupFiles
+    handleGroupFiles,
+    handleAllSelected
 }) => {
     const { loading } = useAppContext()
 
     return (
         <div className={`flex transition-all gap-2 justify-center items-center px-12 py-2 rounded-pill bg-gray-700 shadow rounded-lg fixed ${showFormFiles && 'left-20'}  bottom-4`}>
-            
+
             {(!showCheckboxFile && !showGroupFiles) && <div className="flex items-center justify-center gap-3 border py-2.5 px-5 rounded-lg cursor-pointer" onClick={() => setShowNewFiles(true)}>
-               {!showFormFiles && <span className="text-white">Carregar mais arquivos</span>}
+                {!showFormFiles && <span className="text-white">Carregar mais arquivos</span>}
                 <img
                     src="./icons/upload-icon.png"
                     className="h-6 h-6"
@@ -80,12 +82,22 @@ const Footer: React.FC<FormsProps> = ({
                     </div>
                 </Tooltip>
             }
+
+            {showCheckboxFile && <div className="flex items-center justify-center gap-3 border py-2.5 px-5 rounded-lg cursor-pointer"
+                onClick={() => handleAllSelected()}>
+                <span className="text-white">Selecionar Todos</span>
+                <img
+                    src="./icons/checkbox.png"
+                    className="h-6 h-6"
+                    alt="upload-logo"
+                />
+            </div>}
             {!showCheckboxFile &&
                 <Tooltip title={!showGroupFiles ?
-                     `Quando o print for quebrado, agrupe os arquivos para unir as informações em uma mesma linha de excel.` : ''}>
+                    `Quando o print for quebrado, agrupe os arquivos para unir as informações em uma mesma linha de excel.` : ''}>
 
                     <div className="flex items-center justify-center gap-3 border py-2.5 px-5 rounded-lg cursor-pointer" onClick={() => setShowGroupFiles(!showGroupFiles)}>
-                    {!showFormFiles &&  <span className="text-white">{showGroupFiles ? 'Finalizar Agrupamento' : 'Agrupar Arquivos'}</span>}
+                        {!showFormFiles && <span className="text-white">{showGroupFiles ? 'Finalizar Agrupamento' : 'Agrupar Arquivos'}</span>}
                         {showGroupFiles ?
                             (
                                 <svg
@@ -111,6 +123,16 @@ const Footer: React.FC<FormsProps> = ({
                             )}
                     </div>
                 </Tooltip>}
+
+            {showGroupFiles && <div className="flex items-center justify-center gap-3 border py-2.5 px-5 rounded-lg cursor-pointer"
+                onClick={() => handleAllSelected()}>
+                <span className="text-white">Selecionar Todos</span>
+                <img
+                    src="./icons/checkbox.png"
+                    className="h-6 h-6"
+                    alt="upload-logo"
+                />
+            </div>}
 
             {(!showCheckboxFile && showGroupFiles) && <Button text="Agrupar" isLoading={loading} arrowIcon onClick={handleGroupFiles} />}
             {(!showGroupFiles && !showCheckboxFile) && <Button deleteButton text="Cancelar" isLoading={loading} onClick={handleCancel} />}
