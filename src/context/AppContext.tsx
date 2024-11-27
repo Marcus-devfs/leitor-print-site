@@ -88,12 +88,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             } catch (error: any) {
                 localStorage.setItem('token', '');
                 console.error(error);
-                setAlertData({
-                    active: true,
-                    title: 'Erro',
-                    message: error.message || 'Erro ao carregar os dados do usuário.',
-                    type: 'error',
-                });
+return false
             } finally {
                 setLoading(false);
             }
